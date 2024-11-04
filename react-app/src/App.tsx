@@ -1,6 +1,17 @@
-import { useState } from 'react';
+import { useState } from 'react'
+import { Button } from "@/components/ui/button"
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import './App.css'
 
-export default function FetchDataButton() {
+export default function App() {
   const [data, setData] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,12 +37,37 @@ export default function FetchDataButton() {
   };
 
   return (
-    <div>
-      <button onClick={fetchData}>API 호출하기</button>
-      
-      {loading && <p>로딩 중...</p>}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-      {data && <p>{data}</p>}
-    </div>
-  );
+    <><div className='content'>
+      <Table>
+        <TableCaption>A list of your recent invoices.</TableCaption>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[100px]">Invoice</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Method</TableHead>
+            <TableHead>Exec</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow>
+            <TableCell className="font-medium">INV001</TableCell>
+            <TableCell>Paid</TableCell>
+            <TableCell>Credit Card</TableCell>
+            <TableCell><Button>Exec</Button></TableCell>
+            <TableCell className="text-right">$250.00</TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+    </div><><h1 className="text-3xl font-bold underline">
+      Hello world!
+    </h1>
+        <div>
+          <Button onClick={fetchData}>API 호출하기</Button>
+
+          {loading && <p>로딩 중...</p>}
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+          {data && <p>{data}</p>}
+        </div></></>
+  )
 }

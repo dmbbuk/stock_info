@@ -5,7 +5,7 @@ import getYFdatas from './getYFdatas'
 // CORS 미들웨어 초기화
 const cors = Cors({
   methods: ['GET', 'POST', 'OPTIONS'],
-  origin: 'http://localhost:3000', // 허용할 도메인
+  origin: 'http://localhost:5173', // 허용할 도메인
 });
 
 export default function handler (
