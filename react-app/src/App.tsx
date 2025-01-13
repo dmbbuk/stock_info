@@ -11,8 +11,16 @@ import {
 } from "@/components/ui/table"
 import './App.css'
 
+interface StockResponse {
+  id: number;
+  ticker: string;
+  regularMarketPrice: number | undefined;
+  currency: string | undefined;
+  [key: string]: unknown; // 추가적인 필드는 무시
+}
+
 export default function App() {
-  const [data, setData] = useState<string | null>(null);
+  const [datas, setDatas] = useState<StockResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,10 +33,14 @@ export default function App() {
       if (!res.ok) {
         throw new Error('API 호출 실패');
       }
-      console.log('react response', res);
-
       const result = await res.json(); // JSON 데이터를 파싱
-      setData(result.message); // 응답 메시지를 상태로 저장
+      if(result){
+        console.log('result', result);
+        console.log('datas.regularMarketPrice', result.data.regularMarketPrice);
+        setDatas(result.data); // 응답 메시지를 상태로 저장
+      } else {
+        throw new Error('API 값 존재하지 않음');
+      }
     } catch (err) {
       setError((err as Error).message);
     } finally {
@@ -42,20 +54,20 @@ export default function App() {
         <TableCaption>A list of your recent invoices.</TableCaption>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[100px]">Invoice</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead>Exec</TableHead>
-            <TableHead className="text-right">Amount</TableHead>
+            <TableHead className="w-[100px]">No</TableHead>
+            <TableHead className="w-[100px]">Ticker</TableHead>
+            <TableHead className="w-[100px]">Price</TableHead>
+            <TableHead className="w-[100px]">Change</TableHead>
+            <TableHead className="w-[100px]">Amount</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           <TableRow>
-            <TableCell className="font-medium">INV001</TableCell>
-            <TableCell>Paid</TableCell>
-            <TableCell>Credit Card</TableCell>
-            <TableCell><Button>Exec</Button></TableCell>
-            <TableCell className="text-right">$250.00</TableCell>
+            <TableCell className="font-medium">1</TableCell>
+            <TableCell className="font-medium">AAPL</TableCell>
+            <TableCell className="font-medium">{datas ? datas.regularMarketPrice : '데이터 없음'}</TableCell>
+            <TableCell className="font-medium">1</TableCell>
+            <TableCell className="font-medium">1</TableCell>
           </TableRow>
         </TableBody>
       </Table>
@@ -67,7 +79,6 @@ export default function App() {
 
           {loading && <p>로딩 중...</p>}
           {error && <p style={{ color: 'red' }}>{error}</p>}
-          {data && <p>{data}</p>}
         </div></></>
   )
 }
