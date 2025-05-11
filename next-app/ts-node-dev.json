@@ -1,0 +1,4 @@
+{
+  "respawn": true,
+  "ignore-watch": ["node_modules", ".next"]
+}

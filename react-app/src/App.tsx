@@ -10,7 +10,9 @@
 //   TableRow,
 // } from "@/components/ui/table"
 import './App.css'
-import SSEComponent from '@/components/service/SSEComponent';
+// import SSEComponent from '@/components/service/SSEComponent';
+import useStockSocket from './hooks/useStockSocket';
+
 
 export default function App() {
   // const [datas, setDatas] = useState<StockResponse | null>(null);
@@ -40,9 +42,11 @@ export default function App() {
   //   }
   // };
 
+  useStockSocket(); // WebSocket 연결 시도 (on mount)
   return (
     <div className='content'>
-      <SSEComponent />
+      {/* <SSEComponent /> */}
+      <h1>📈 실시간 주식 데이터</h1>
     </div>
   )
 }
