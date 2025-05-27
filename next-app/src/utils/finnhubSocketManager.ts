@@ -53,6 +53,7 @@ const connectToFinnhub = () => {
     socket.send(
       JSON.stringify({ type: "subscribe", symbol: "BINANCE:DOGEUSDT" })
     );
+    socket.send(JSON.stringify({ type: "subscribe", symbol: "AAPL" }));
   });
 
   socket.on("message", (data) => {

@@ -15,6 +15,18 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = createServer((req: any, res: any) => {
+    // CORS 헤더 설정
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    // OPTIONS 요청은 바로 응답
+    if (req.method === "OPTIONS") {
+      res.statusCode = 204;
+      res.end();
+      return;
+    }
+
     const parsedUrl = parse(req.url || "", true);
     handle(req, res, parsedUrl);
   });

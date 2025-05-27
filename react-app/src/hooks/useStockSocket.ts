@@ -35,6 +35,7 @@ const useStockSocket = () => {
 
     socket.on("finnhub-data", (data: RawSocketMessage) => {
       console.log("data", data);
+      if (data.type !== "trade") return;
       setLatestTrades((prev) => {
         let changed = false;
         const updated = { ...prev };
