@@ -16,7 +16,13 @@ export default async function handler(
 
   try {
     const response = await fetch(url);
+    if (!response.ok) {
+  return res.status(502).json({ error: "Finnhub fetch failed", status: response.status });
+}
     const data = await response.json();
+    if (!data || !data.metric) {
+  return res.status(404).json({ error: "No fundamental data returned from Finnhub" });
+}
     res.status(200).json(data.metric);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch fundamentals" });

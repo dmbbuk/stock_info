@@ -23,6 +23,7 @@ export const fetchFundamentalsFor = async (
         `http://localhost:3001/api/stocks/fundamentals?symbol=${ticker}`
       );
       const data = await res.json();
+      console.log('data', data);
 
       if (data && Object.keys(data).length > 0) {
         result[ticker] = {
