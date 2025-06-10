@@ -1,5 +1,6 @@
 // src/pages/api/stocks/fundamentals.ts
 import type { NextApiRequest, NextApiResponse } from "next";
+import { mockFundamentals } from "../../../mocks/mockFundamentalData";
 
 export default async function handler(
   req: NextApiRequest,
@@ -22,8 +23,20 @@ export default async function handler(
     return res.status(400).json({ error: "symbol is required" });
   }
 
+  // [모드 전환용] 실제 호출 대신 mock 사용
+  const isMockMode = true;
+
+  if (isMockMode) {
+    const mockData = mockFundamentals[symbol];
+    if (mockData) {
+      return res.status(200).json(mockData);
+    } else {
+      return res.status(404).json({ error: "No mock data found" });
+    }
+  }
+
   const apiKey = process.env.EODHD_API_KEY;
-  const url = `https://eodhd.com/api/fundamentals/${symbol}.US?api_token=${apiKey}`;
+  const url = `https://eodhd.com/api/fundamentals/${symbol}.US?api_token=${apiKey}&fmt=json`;
 
   try {
     const response = await fetch(url);

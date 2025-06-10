@@ -32,3 +32,11 @@ Next.js API Routes (Vercel or Lambda) ◀── REST (펀더멘털, 감시리스
 [WebSocket 중계 서버]
 ↕ socket.io
 ↔ EODHD WebSocket (실시간 가격)
+
+4. 디자인
+   ✨ 차선 제안 (더 미니멀하게)
+   기본은 테이블만 제공
+
+“내 종목 요약 보기”는 카드 UI로 제공하되, Top 3~5 종목만 요약 (예: 홈 위젯처럼)
+
+카드 뷰는 “추후 확장 기능”으로 자연스럽게 추가

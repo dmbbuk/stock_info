@@ -1,22 +1,48 @@
+import { useEffect, useMemo, useState } from "react";
 import { hotTickers } from "../constants/hotTickers";
 import { useStockSocket } from "../hooks/useStockSocket";
 import { fetchFundamentalsFor } from "../components/service/fundamentalsFetcher";
-import { useEffect, useState } from "react";
 import { formatTime } from "../utils/formatTime";
 import type { RealtimePrice } from "../types/realtime";
-import { Fundamentals } from "../types/fundamentals";
+import type { Fundamentals } from "../types/fundamentals";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  getSortedRowModel,
+  useReactTable,
+  type SortingState,
+} from "@tanstack/react-table";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+
+interface StockRow {
+  ticker: string;
+  price: string;
+  time: string;
+  PER: string;
+  PBR: string;
+  EPS: string;
+  marketCap: string;
+  dividendYield: string;
+}
 
 const StockTable = () => {
   const { latestPrices, subscribeTickers } = useStockSocket(hotTickers);
   const [fundamentals, setFundamentals] = useState<
     Record<string, Fundamentals>
   >({});
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
-    // 실시간 가격 구독
     subscribeTickers(hotTickers);
 
-    // 펀더멘털 fetch
     const loadFundamentals = async () => {
       const data = await fetchFundamentalsFor(hotTickers);
       setFundamentals(data);
@@ -24,39 +50,83 @@ const StockTable = () => {
     loadFundamentals();
   }, []);
 
+  const data: StockRow[] = useMemo(() => {
+    return hotTickers.map((ticker) => {
+      const priceData: RealtimePrice | undefined = latestPrices[ticker];
+      const f = fundamentals[ticker];
+
+      return {
+        ticker,
+        price: priceData?.price?.toFixed(2) ?? "-",
+        time: formatTime(priceData?.timestamp),
+        PER: f?.PER?.toFixed(2) ?? "-",
+        PBR: f?.PBR?.toFixed(2) ?? "-",
+        EPS: f?.EPS?.toFixed(2) ?? "-",
+        marketCap: f?.marketCap?.toLocaleString() ?? "-",
+        dividendYield:
+          f?.dividendYield != null ? `${f.dividendYield.toFixed(2)}%` : "-",
+      };
+    });
+  }, [latestPrices, fundamentals]);
+
+  const columns: ColumnDef<StockRow>[] = [
+    { accessorKey: "ticker", header: "Ticker" },
+    { accessorKey: "price", header: "Price" },
+    { accessorKey: "time", header: "Time", enableSorting: false },
+    { accessorKey: "PER", header: "PER" },
+    { accessorKey: "PBR", header: "PBR" },
+    { accessorKey: "EPS", header: "EPS" },
+    { accessorKey: "marketCap", header: "시가총액" },
+    { accessorKey: "dividendYield", header: "배당수익률" },
+  ];
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
+  });
+
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Ticker</th>
-          <th>Price</th>
-          <th>Time</th>
-          <th>PER</th>
-          <th>PBR</th>
-          <th>EPS</th>
-          <th>시가총액</th>
-          <th>배당수익률</th>
-        </tr>
-      </thead>
-      <tbody>
-        {hotTickers.map((ticker) => {
-          const priceData: RealtimePrice | undefined = latestPrices[ticker];
-          const f = fundamentals[ticker];
-          return (
-            <tr key={ticker}>
-              <td>{ticker}</td>
-              <td>{priceData?.price ?? "-"}</td>
-              <td>{formatTime(priceData?.timestamp)}</td>
-              <td>{f?.PER ?? "-"}</td>
-              <td>{f?.PBR ?? "-"}</td>
-              <td>{f?.EPS ?? "-"}</td>
-              <td>{f?.marketCap ?? "-"}</td>
-              <td>{f?.dividendYield ?? "-"}</td>
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
+    <div className="p-4">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead
+                  key={header.id}
+                  onClick={header.column.getToggleSortingHandler()}
+                  className="cursor-pointer select-none"
+                >
+                  {flexRender(
+                    header.column.columnDef.header,
+                    header.getContext()
+                  )}
+                  {header.column.getIsSorted() === "asc" && " ▲"}
+                  {header.column.getIsSorted() === "desc" && " ▼"}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id}>
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 
