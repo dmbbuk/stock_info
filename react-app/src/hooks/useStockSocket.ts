@@ -1,79 +1,97 @@
-// useStockSocket.ts
 import { useEffect, useRef, useState } from "react";
 import { io, Socket } from "socket.io-client";
+import {
+  simulateWebSocketConnection,
+  mockEODHDWebSocketMessage,
+  subscribeToSymbol,
+} from "../mocks/websocketMock";
 
-type RawSocketMessage = {
-  data: {
-    c: string[] | null; // 거래 조건
-    s: string; // 티커, 종목
-    t: number; // Timestamp
-    v: number; // 거래 수량
-    p: number; // 거래 가격
-  }[];
-  type: string; // 데이터 메세지 타입
+export type RealtimePrice = {
+  price: number;
+  timestamp: number;
 };
 
-type Trade = {
-  s: string; // 티커
-  p: number; // 가격
-  v: number; // 수량
-  t: number; // 타임스탬프
-};
-
-const useStockSocket = () => {
+export const useStockSocket = (watchedTickers: string[]) => {
   const socketRef = useRef<Socket | null>(null);
-  const [latestTrades, setLatestTrades] = useState<Record<string, Trade>>({});
-  // const [stocks, setStocks] = useState<RawSocketMessage[]>([]);
+  const [latestPrices, setLatestPrices] = useState<
+    Record<string, RealtimePrice>
+  >({});
+  const mockWebSocketEnabled = import.meta.env.VITE_MOCK_WEBSOCKET === "true";
 
   useEffect(() => {
-    const socket = io("http://localhost:3001");
-    socketRef.current = socket;
+    const mockIntervals: NodeJS.Timeout[] = [];
 
-    socket.on("connect", () => {
-      console.log("Connected to server");
-    });
+    if (mockWebSocketEnabled) {
+      console.log("mockWebSocketEnabled");
 
-    socket.on("finnhub-data", (data: RawSocketMessage) => {
-      console.log("data", data);
-      if (data.type !== "trade") return;
-      setLatestTrades((prev) => {
-        let changed = false;
-        const updated = { ...prev };
+      simulateWebSocketConnection();
 
-        for (const trade of data.data) {
-          const prevTrade = prev[trade.s];
-          // 이전 거래가 존재하지 않거나, 거래의 값이 하나라도 다를 경우(가격, 수량, 시간) 다른 거래로 취급함함
-          const isChanged =
-            !prevTrade ||
-            prevTrade.p !== trade.p ||
-            prevTrade.v !== trade.v ||
-            prevTrade.t !== trade.t;
+      watchedTickers.forEach((ticker) => {
+        // 수신 콜백 등록
+        subscribeToSymbol(ticker, (data) => {
+          setLatestPrices((prev) => ({
+            ...prev,
+            [ticker]: data,
+          }));
+        });
 
-          if (isChanged) {
-            updated[trade.s] = trade;
-            changed = true;
-          }
-        }
+        // 주기적으로 mock 데이터 생성
+        const interval = setInterval(() => {
+          mockEODHDWebSocketMessage(ticker);
+        }, 1000);
 
-        return changed ? updated : prev; // 값이 바뀌지 않았다면 이전 상태 그대로 반환
+        mockIntervals.push(interval);
       });
-    });
 
-    // socket.on("finnhub-data", (data) => {
-    //   console.log("📈 Real-time data from Finnhub:", data);
-    //   setStocks((prev) => [data, ...prev.slice(0, 19)]); // 최신 20개 유지
-    // });
+      return () => {
+        mockIntervals.forEach(clearInterval);
+      };
+    } else {
+      const socket = io("http://localhost:3002");
+      socketRef.current = socket;
 
-    socket.on("disconnect", () => {
-      console.log("Disconnected");
-    });
+      socket.emit("subscribe", watchedTickers);
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+      socket.on(
+        "stock:data",
+        ({
+          ticker,
+          data,
+        }: {
+          ticker: string;
+          data: {
+            p: RealtimePrice["price"];
+            t: RealtimePrice["timestamp"];
+          };
+        }) => {
+          setLatestPrices((prev) => ({
+            ...prev,
+            [ticker]: {
+              price: data.p,
+              timestamp: data.t,
+            },
+          }));
+        }
+      );
 
-  return latestTrades;
+      return () => {
+        socket.emit("unsubscribe", watchedTickers);
+        socket.disconnect();
+      };
+    }
+  }, [watchedTickers, mockWebSocketEnabled]);
+
+  return {
+    latestPrices,
+    subscribeTickers: (tickers: string[]) => {
+      if (!mockWebSocketEnabled) {
+        socketRef.current?.emit("subscribe", tickers);
+      }
+    },
+    unsubscribeTickers: (tickers: string[]) => {
+      if (!mockWebSocketEnabled) {
+        socketRef.current?.emit("unsubscribe", tickers);
+      }
+    },
+  };
 };
-
-export default useStockSocket;

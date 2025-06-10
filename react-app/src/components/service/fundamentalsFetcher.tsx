@@ -1,38 +1,25 @@
-// src/services/fundamentalsFetcher.ts
-export type Fundamentals = {
-  t: string;
-  per: number;
-  eps: number;
-  marketCap: number;
-  pbr: number;
-  dividendYield: number;
-};
-
-export const isStockTicker = (symbol: string) => !symbol.startsWith("BINANCE:");
+import { Fundamentals } from "../../types/fundamentals";
 
 export const fetchFundamentalsFor = async (
   tickers: string[]
 ): Promise<Record<string, Fundamentals>> => {
   const result: Record<string, Fundamentals> = {};
-  const stockTickers = tickers.filter(isStockTicker);
-  console.log("aaa");
 
-  for (const ticker of stockTickers) {
+  for (const ticker of tickers) {
     try {
       const res = await fetch(
-        `http://localhost:3001/api/stocks/fundamentals?symbol=${ticker}`
+        `http://localhost:3000/api/stocks/fundamentals?symbol=${ticker}`
       );
       const data = await res.json();
-      console.log('data', data);
 
       if (data && Object.keys(data).length > 0) {
         result[ticker] = {
-          t: ticker,
-          per: data.peTTM,
-          eps: data.epsTTM,
-          marketCap: data.marketCapitalization,
-          pbr: data.pb,
-          dividendYield: data.currentDividendYieldTTM,
+          ticker: ticker,
+          PER: data.peRatio ?? 0,
+          EPS: data.eps ?? 0,
+          marketCap: data.marketCap ?? 0,
+          PBR: data.pbRatio ?? 0,
+          dividendYield: data.dividendYield ?? 0,
         };
       }
     } catch (e) {
