@@ -11,3 +11,24 @@ TODO
 2. 모든 주식의 정보를 가져오기
 3. 웹소켓을 사용해서 접속한채로 실시간 데이터를 받아올 수 있음, 하지만 모든 데이터를 한번에 가져오려면 어떻게 해야할까? 우선순위에 따라서 나누어야 할까? 설계 고민...
 4.
+
+[사용자 브라우저]
+│
+▼
+React (localhost:3000) ────▶ WebSocket (EC2:3001)
+│ ▲
+▼ │
+Next.js API Routes (Vercel or Lambda) ◀── REST (펀더멘털, 감시리스트)
+
+[Frontend (React SPA)]
+↕ socket.io (실시간)
+↕ REST (지표조회)
+
+[Next.js API 서버]
+↕ REST API (지표 Fetch)
+⟳ 주기적 백그라운드 fetch & 캐싱 (예: Redis, DB)
+↕ EODHD (REST API 사용, 하루 1회)
+
+[WebSocket 중계 서버]
+↕ socket.io
+↔ EODHD WebSocket (실시간 가격)
