@@ -9,6 +9,7 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  getPaginationRowModel,
   useReactTable,
   type SortingState,
 } from "@tanstack/react-table";
@@ -43,6 +44,8 @@ const StockTable = () => {
     Record<string, Fundamentals>
   >({});
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [pageSize, setPageSize] = useState(20);
+  const [pageIndex, setPageIndex] = useState(0);
 
   const [fundamentalFilters, setFundamentalFilters] = useState({
     per: "ALL",
@@ -199,10 +202,32 @@ const StockTable = () => {
   const table = useReactTable({
     data: filteredData,
     columns,
+    state: {
+      sorting,
+      pagination: {
+        pageSize,
+        pageIndex,
+      },
+    },
+    onSortingChange: setSorting,
+    onPaginationChange: (updater) => {
+      const newPagination =
+        typeof updater === "function"
+          ? updater({ pageSize, pageIndex })
+          : updater;
+
+      if (newPagination.pageIndex !== pageIndex)
+        setPageIndex(newPagination.pageIndex);
+
+      if (newPagination.pageSize !== pageSize)
+        setPageSize(newPagination.pageSize);
+    },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    state: { sorting },
-    onSortingChange: setSorting,
+    getPaginationRowModel: getPaginationRowModel(),
+
+    // 👇 이거 꼭 추가해야 "페이지 유지"됨
+    autoResetPageIndex: false,
   });
 
   return (
@@ -224,7 +249,29 @@ const StockTable = () => {
         filters={fundamentalFilters}
         onChange={updateFundamentalFilter}
       />
-      <h1 className="text-2xl font-bold mb-4">실시간 주식 데이터</h1>
+
+      <div className="flex justify-between items-center mb-2">
+        <h1 className="text-2xl font-bold">실시간 주식 데이터</h1>
+        <div className="flex items-center gap-2 text-sm">
+          <label>페이지당 보기:</label>
+          <select
+            value={pageSize}
+            onChange={(e) => {
+              const newSize = Number(e.target.value);
+              setPageSize(newSize);
+              setPageIndex(0); // 👈 페이지 사이즈 바꾸면 1페이지로
+            }}
+            className="text-black rounded px-2 py-1"
+          >
+            {[10, 20, 50, 100].map((size) => (
+              <option key={size} value={size}>
+                {size}개
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
       <Table>
         <TableHeader className="bg-[#2A2A40] sticky top-0 z-10">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -255,14 +302,13 @@ const StockTable = () => {
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className={`px-4 py-1 ${(() => {
-                    const raw = cell.getValue();
-                    const str =
-                      typeof raw === "string" ? raw : String(raw ?? "");
-                    return !isNaN(Number(str.replace(/[%,$,]/g, "")))
+                  className={`px-4 py-1 ${
+                    !isNaN(
+                      Number(String(cell.getValue()).replace(/[%,$,]/g, ""))
+                    )
                       ? "text-right"
-                      : "text-left";
-                  })()}`}
+                      : "text-left"
+                  }`}
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>
@@ -271,6 +317,28 @@ const StockTable = () => {
           ))}
         </TableBody>
       </Table>
+      <div className="flex justify-end items-center mt-4 gap-4 text-sm">
+        <span>
+          총 {filteredData.length}개 중 {pageIndex * pageSize + 1}~
+          {Math.min((pageIndex + 1) * pageSize, filteredData.length)}개 표시 중
+        </span>
+        <div className="flex gap-2">
+          <button
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
+            className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-40"
+          >
+            이전
+          </button>
+          <button
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+            className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-40"
+          >
+            다음
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
