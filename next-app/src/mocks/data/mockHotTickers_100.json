@@ -1,0 +1,902 @@
+[
+  {
+    "code": "AAPL",
+    "pe": 30.1,
+    "pb": 7.5,
+    "eps": 6.5,
+    "market_capitalization": 3000000000000,
+    "dividend_yield": 0.5,
+    "volume": 70000000
+  },
+  {
+    "code": "MSFT",
+    "pe": 35.2,
+    "pb": 12.0,
+    "eps": 9.2,
+    "market_capitalization": 3500000000000,
+    "dividend_yield": 0.85,
+    "volume": 16000000
+  },
+  {
+    "code": "NVDA",
+    "pe": 85.9,
+    "pb": 40.2,
+    "eps": 4.91,
+    "market_capitalization": 3100000000000,
+    "dividend_yield": 0.07,
+    "volume": 167000000
+  },
+  {
+    "code": "AMZN",
+    "pe": 60.0,
+    "pb": 17.0,
+    "eps": 3.5,
+    "market_capitalization": 2260000000000,
+    "dividend_yield": 0.0,
+    "volume": 39330000
+  },
+  {
+    "code": "GOOGL",
+    "pe": 25.0,
+    "pb": 5.0,
+    "eps": 10.0,
+    "market_capitalization": 1900000000000,
+    "dividend_yield": 0.0,
+    "volume": 18990000
+  },
+  {
+    "code": "META",
+    "pe": 28.0,
+    "pb": 6.0,
+    "eps": 11.0,
+    "market_capitalization": 1750000000000,
+    "dividend_yield": 0.29,
+    "volume": 9580000
+  },
+  {
+    "code": "TSLA",
+    "pe": 70.4,
+    "pb": 13.6,
+    "eps": 2.21,
+    "market_capitalization": 800000000000,
+    "dividend_yield": 0,
+    "volume": 72000000
+  },
+  {
+    "code": "AVGO",
+    "pe": 95.0,
+    "pb": 14.0,
+    "eps": 17.0,
+    "market_capitalization": 1200000000000,
+    "dividend_yield": 0.88,
+    "volume": 24600000
+  },
+  {
+    "code": "NFLX",
+    "pe": 57.6,
+    "pb": 6.4,
+    "eps": 21.16,
+    "market_capitalization": 519000000000,
+    "dividend_yield": 0,
+    "volume": 2380000
+  },
+  {
+    "code": "AMD",
+    "pe": 88.8,
+    "pb": 12.94,
+    "eps": 1.36,
+    "market_capitalization": 196000000000,
+    "dividend_yield": 0,
+    "volume": 32260000
+  },
+  {
+    "code": "INTC",
+    "pe": 20.7,
+    "pb": 1.72,
+    "eps": 0.85,
+    "market_capitalization": 90210000000,
+    "dividend_yield": 2.42,
+    "volume": 146780000
+  },
+  {
+    "code": "ORCL",
+    "pe": 41.4,
+    "pb": 4.26,
+    "eps": 4.26,
+    "market_capitalization": 494610000000,
+    "dividend_yield": 0.96,
+    "volume": 17990000
+  },
+  {
+    "code": "QCOM",
+    "pe": 16.2,
+    "pb": 2.13,
+    "eps": 9.82,
+    "market_capitalization": 175110000000,
+    "dividend_yield": 2.13,
+    "volume": 8860000
+  },
+  {
+    "code": "CSCO",
+    "pe": 26.3,
+    "pb": 2.44,
+    "eps": 2.44,
+    "market_capitalization": 254190000000,
+    "dividend_yield": 2.51,
+    "volume": 20440000
+  },
+  {
+    "code": "IBM",
+    "pe": 48.4,
+    "pb": 5.81,
+    "eps": 5.81,
+    "market_capitalization": 261640000000,
+    "dividend_yield": 2.38,
+    "volume": 4660000
+  },
+  {
+    "code": "GOOG",
+    "pe": 19.9,
+    "pb": 8.97,
+    "eps": 8.97,
+    "market_capitalization": 2160000000000,
+    "dividend_yield": 0.45,
+    "volume": 18990000
+  },
+  {
+    "code": "BAC",
+    "pe": 13.35,
+    "pb": 3.35,
+    "eps": 3.35,
+    "market_capitalization": 336900000000,
+    "dividend_yield": 2.28,
+    "volume": 47870000
+  },
+  {
+    "code": "JPM",
+    "pe": 13.16,
+    "pb": 2.03,
+    "eps": 20.37,
+    "market_capitalization": 745210000000,
+    "dividend_yield": 1.88,
+    "volume": 7430000
+  },
+  {
+    "code": "V",
+    "pe": 37.97,
+    "pb": 9.83,
+    "eps": 9.83,
+    "market_capitalization": 723910000000,
+    "dividend_yield": 0.61,
+    "volume": 5560000
+  },
+  {
+    "code": "MA",
+    "pe": 41.44,
+    "pb": 14.26,
+    "eps": 14.26,
+    "market_capitalization": 536440000000,
+    "dividend_yield": 0.48,
+    "volume": 2240000
+  },
+  {
+    "code": "WMT",
+    "pe": 41.1,
+    "pb": 2.33,
+    "eps": 2.33,
+    "market_capitalization": 764520000000,
+    "dividend_yield": 0.92,
+    "volume": 16390000
+  },
+  {
+    "code": "PG",
+    "pe": 25.75,
+    "pb": 6.3,
+    "eps": 6.3,
+    "market_capitalization": 380070000000,
+    "dividend_yield": 2.51,
+    "volume": 5960000
+  },
+  {
+    "code": "COST",
+    "pe": 56.54,
+    "pb": 17.63,
+    "eps": 17.63,
+    "market_capitalization": 442050000000,
+    "dividend_yield": 0.48,
+    "volume": 2460000
+  },
+  {
+    "code": "PEP",
+    "pe": 19.1,
+    "pb": 6.8,
+    "eps": 6.8,
+    "market_capitalization": 178100000000,
+    "dividend_yield": 2.51,
+    "volume": 9170000
+  },
+  {
+    "code": "KO",
+    "pe": 28.86,
+    "pb": 2.5,
+    "eps": 2.5,
+    "market_capitalization": 310210000000,
+    "dividend_yield": 2.73,
+    "volume": 12720000
+  },
+  {
+    "code": "CVX",
+    "pe": 16.6,
+    "pb": 8.72,
+    "eps": 8.72,
+    "market_capitalization": 252840000000,
+    "dividend_yield": 4.61,
+    "volume": 9260000
+  },
+  {
+    "code": "XOM",
+    "pe": 14.46,
+    "pb": 7.56,
+    "eps": 7.56,
+    "market_capitalization": 471090000000,
+    "dividend_yield": 3.59,
+    "volume": 22650000
+  },
+  {
+    "code": "UNH",
+    "pe": 12.98,
+    "pb": 23.92,
+    "eps": 23.92,
+    "market_capitalization": 281720000000,
+    "dividend_yield": 2.7,
+    "volume": 14710000
+  },
+  {
+    "code": "PLTR",
+    "pe": 78.0,
+    "pb": 1.02,
+    "eps": 0.5,
+    "market_capitalization": 71850000000,
+    "dividend_yield": 0,
+    "volume": 97360000
+  },
+  {
+    "code": "UBER",
+    "pe": 15.1,
+    "pb": 5.73,
+    "eps": 5.73,
+    "market_capitalization": 181050000000,
+    "dividend_yield": 0,
+    "volume": 15360000
+  },
+  {
+    "code": "ABNB",
+    "pe": 17.16,
+    "pb": 6.13,
+    "eps": 8.78,
+    "market_capitalization": 126532627688,
+    "dividend_yield": 1.6,
+    "volume": 17747224
+  },
+  {
+    "code": "ADBE",
+    "pe": 15.6,
+    "pb": 12.85,
+    "eps": 6.69,
+    "market_capitalization": 28793476516,
+    "dividend_yield": 0.94,
+    "volume": 76705571
+  },
+  {
+    "code": "ADI",
+    "pe": 19.56,
+    "pb": 11.57,
+    "eps": 0.84,
+    "market_capitalization": 334414645935,
+    "dividend_yield": 3.82,
+    "volume": 30925824
+  },
+  {
+    "code": "ADP",
+    "pe": 82.52,
+    "pb": 3.1,
+    "eps": 11.57,
+    "market_capitalization": 240610543675,
+    "dividend_yield": 2.88,
+    "volume": 48925278
+  },
+  {
+    "code": "ADSK",
+    "pe": 57.62,
+    "pb": 4.01,
+    "eps": 12.27,
+    "market_capitalization": 403772598689,
+    "dividend_yield": 3.26,
+    "volume": 48837656
+  },
+  {
+    "code": "ALGN",
+    "pe": 24.91,
+    "pb": 9.62,
+    "eps": 14.82,
+    "market_capitalization": 418978611219,
+    "dividend_yield": 0.46,
+    "volume": 45174411
+  },
+  {
+    "code": "AMAT",
+    "pe": 17.01,
+    "pb": 3.37,
+    "eps": 14.96,
+    "market_capitalization": 414838528590,
+    "dividend_yield": 1.01,
+    "volume": 70398374
+  },
+  {
+    "code": "ANET",
+    "pe": 63.54,
+    "pb": 6.78,
+    "eps": 7.74,
+    "market_capitalization": 142054338630,
+    "dividend_yield": 0.92,
+    "volume": 77477854
+  },
+  {
+    "code": "ASML",
+    "pe": 41.46,
+    "pb": 3.83,
+    "eps": 4.35,
+    "market_capitalization": 326017071445,
+    "dividend_yield": 0.76,
+    "volume": 7623406
+  },
+  {
+    "code": "AZN",
+    "pe": 31.64,
+    "pb": 11.79,
+    "eps": 9.63,
+    "market_capitalization": 42126513711,
+    "dividend_yield": 1.49,
+    "volume": 7943865
+  },
+  {
+    "code": "BIDU",
+    "pe": 57.67,
+    "pb": 12.26,
+    "eps": 0.96,
+    "market_capitalization": 103097283767,
+    "dividend_yield": 2.77,
+    "volume": 51598932
+  },
+  {
+    "code": "BIIB",
+    "pe": 62.18,
+    "pb": 2.49,
+    "eps": 0.58,
+    "market_capitalization": 302990474730,
+    "dividend_yield": 3.83,
+    "volume": 68362949
+  },
+  {
+    "code": "BKNG",
+    "pe": 64.53,
+    "pb": 13.23,
+    "eps": 2.56,
+    "market_capitalization": 52383937819,
+    "dividend_yield": 1.87,
+    "volume": 54035071
+  },
+  {
+    "code": "CHTR",
+    "pe": 69.24,
+    "pb": 14.86,
+    "eps": 11.78,
+    "market_capitalization": 45227505095,
+    "dividend_yield": 3.65,
+    "volume": 47211814
+  },
+  {
+    "code": "CMCSA",
+    "pe": 46.56,
+    "pb": 1.08,
+    "eps": 5.15,
+    "market_capitalization": 347439526239,
+    "dividend_yield": 2.98,
+    "volume": 54567526
+  },
+  {
+    "code": "CPRT",
+    "pe": 77.79,
+    "pb": 14.24,
+    "eps": 7.99,
+    "market_capitalization": 26941456290,
+    "dividend_yield": 0.5,
+    "volume": 34323382
+  },
+  {
+    "code": "CRWD",
+    "pe": 92.99,
+    "pb": 10.49,
+    "eps": 7.51,
+    "market_capitalization": 444940246546,
+    "dividend_yield": 3.89,
+    "volume": 79436859
+  },
+  {
+    "code": "CSX",
+    "pe": 44.89,
+    "pb": 9.22,
+    "eps": 6.06,
+    "market_capitalization": 79746962182,
+    "dividend_yield": 1.98,
+    "volume": 46581640
+  },
+  {
+    "code": "CTAS",
+    "pe": 90.21,
+    "pb": 11.07,
+    "eps": 14.4,
+    "market_capitalization": 156048581049,
+    "dividend_yield": 0.67,
+    "volume": 53607319
+  },
+  {
+    "code": "DDOG",
+    "pe": 36.54,
+    "pb": 9.34,
+    "eps": 3.61,
+    "market_capitalization": 470699194482,
+    "dividend_yield": 1.29,
+    "volume": 14568162
+  },
+  {
+    "code": "DLTR",
+    "pe": 58.82,
+    "pb": 14.01,
+    "eps": 4.21,
+    "market_capitalization": 430304429952,
+    "dividend_yield": 3.34,
+    "volume": 54335527
+  },
+  {
+    "code": "DOCU",
+    "pe": 96.19,
+    "pb": 14.43,
+    "eps": 0.59,
+    "market_capitalization": 300259170522,
+    "dividend_yield": 2.29,
+    "volume": 10893954
+  },
+  {
+    "code": "DXCM",
+    "pe": 45.75,
+    "pb": 5.2,
+    "eps": 10.66,
+    "market_capitalization": 492601318583,
+    "dividend_yield": 3.22,
+    "volume": 32383650
+  },
+  {
+    "code": "EA",
+    "pe": 81.6,
+    "pb": 5.3,
+    "eps": 1.73,
+    "market_capitalization": 340888530148,
+    "dividend_yield": 2.2,
+    "volume": 9183101
+  },
+  {
+    "code": "EBAY",
+    "pe": 33.98,
+    "pb": 11.77,
+    "eps": 7.56,
+    "market_capitalization": 448329148877,
+    "dividend_yield": 0.34,
+    "volume": 25600731
+  },
+  {
+    "code": "EXC",
+    "pe": 28.24,
+    "pb": 4.08,
+    "eps": 14.97,
+    "market_capitalization": 103882521058,
+    "dividend_yield": 3.59,
+    "volume": 63214140
+  },
+  {
+    "code": "FAST",
+    "pe": 63.21,
+    "pb": 3.4,
+    "eps": 3.72,
+    "market_capitalization": 121129547280,
+    "dividend_yield": 2.81,
+    "volume": 8615948
+  },
+  {
+    "code": "FISV",
+    "pe": 96.66,
+    "pb": 7.06,
+    "eps": 7.4,
+    "market_capitalization": 47222940670,
+    "dividend_yield": 1.75,
+    "volume": 70949142
+  },
+  {
+    "code": "FTNT",
+    "pe": 16.85,
+    "pb": 11.99,
+    "eps": 9.63,
+    "market_capitalization": 191534651332,
+    "dividend_yield": 3.77,
+    "volume": 33127549
+  },
+  {
+    "code": "GILD",
+    "pe": 18.01,
+    "pb": 12.18,
+    "eps": 12.71,
+    "market_capitalization": 111091696676,
+    "dividend_yield": 2.51,
+    "volume": 6264115
+  },
+  {
+    "code": "HON",
+    "pe": 96.16,
+    "pb": 3.42,
+    "eps": 13.96,
+    "market_capitalization": 11200993490,
+    "dividend_yield": 3.21,
+    "volume": 68825108
+  },
+  {
+    "code": "ILMN",
+    "pe": 48.67,
+    "pb": 9.8,
+    "eps": 2.05,
+    "market_capitalization": 431413887587,
+    "dividend_yield": 2.15,
+    "volume": 63130822
+  },
+  {
+    "code": "INTU",
+    "pe": 39.1,
+    "pb": 7.61,
+    "eps": 14.41,
+    "market_capitalization": 143842809830,
+    "dividend_yield": 3.93,
+    "volume": 88000434
+  },
+  {
+    "code": "ISRG",
+    "pe": 62.27,
+    "pb": 8.11,
+    "eps": 11.92,
+    "market_capitalization": 490642836771,
+    "dividend_yield": 2.05,
+    "volume": 46755274
+  },
+  {
+    "code": "JD",
+    "pe": 98.05,
+    "pb": 4.11,
+    "eps": 1.85,
+    "market_capitalization": 363343541158,
+    "dividend_yield": 2.47,
+    "volume": 68580659
+  },
+  {
+    "code": "KDP",
+    "pe": 95.72,
+    "pb": 3.45,
+    "eps": 4.4,
+    "market_capitalization": 303791071432,
+    "dividend_yield": 2.63,
+    "volume": 5796145
+  },
+  {
+    "code": "KLAC",
+    "pe": 55.18,
+    "pb": 4.04,
+    "eps": 6.48,
+    "market_capitalization": 227716216632,
+    "dividend_yield": 3.98,
+    "volume": 25632417
+  },
+  {
+    "code": "LRCX",
+    "pe": 13.84,
+    "pb": 10.18,
+    "eps": 9.95,
+    "market_capitalization": 44485099739,
+    "dividend_yield": 1.31,
+    "volume": 50371653
+  },
+  {
+    "code": "MAR",
+    "pe": 48.34,
+    "pb": 3.09,
+    "eps": 11.93,
+    "market_capitalization": 255517175971,
+    "dividend_yield": 3.52,
+    "volume": 5921216
+  },
+  {
+    "code": "MCHP",
+    "pe": 48.14,
+    "pb": 6.86,
+    "eps": 10.52,
+    "market_capitalization": 381380432480,
+    "dividend_yield": 1.51,
+    "volume": 84042916
+  },
+  {
+    "code": "MRNA",
+    "pe": 27.66,
+    "pb": 3.16,
+    "eps": 13.56,
+    "market_capitalization": 362727296450,
+    "dividend_yield": 1.34,
+    "volume": 10550287
+  },
+  {
+    "code": "MTCH",
+    "pe": 93.44,
+    "pb": 10.02,
+    "eps": 2.1,
+    "market_capitalization": 494779272814,
+    "dividend_yield": 1.51,
+    "volume": 67408398
+  },
+  {
+    "code": "MU",
+    "pe": 54.43,
+    "pb": 12.36,
+    "eps": 14.7,
+    "market_capitalization": 235217653621,
+    "dividend_yield": 2.68,
+    "volume": 67580710
+  },
+  {
+    "code": "MXIM",
+    "pe": 72.7,
+    "pb": 8.16,
+    "eps": 1.05,
+    "market_capitalization": 218380554207,
+    "dividend_yield": 0.02,
+    "volume": 8267248
+  },
+  {
+    "code": "NTES",
+    "pe": 36.92,
+    "pb": 8.79,
+    "eps": 1.99,
+    "market_capitalization": 204069829578,
+    "dividend_yield": 3.56,
+    "volume": 27829035
+  },
+  {
+    "code": "NXPI",
+    "pe": 90.08,
+    "pb": 10.59,
+    "eps": 13.79,
+    "market_capitalization": 385557381233,
+    "dividend_yield": 0.24,
+    "volume": 89226406
+  },
+  {
+    "code": "ODFL",
+    "pe": 77.52,
+    "pb": 7.68,
+    "eps": 2.95,
+    "market_capitalization": 68588407222,
+    "dividend_yield": 2.39,
+    "volume": 59989593
+  },
+  {
+    "code": "OKTA",
+    "pe": 52.29,
+    "pb": 8.63,
+    "eps": 13.34,
+    "market_capitalization": 23394211673,
+    "dividend_yield": 2.22,
+    "volume": 30110587
+  },
+  {
+    "code": "PANW",
+    "pe": 88.32,
+    "pb": 13.2,
+    "eps": 3.89,
+    "market_capitalization": 245564225811,
+    "dividend_yield": 0.32,
+    "volume": 58594474
+  },
+  {
+    "code": "PAYX",
+    "pe": 59.16,
+    "pb": 6.75,
+    "eps": 4.06,
+    "market_capitalization": 445120520870,
+    "dividend_yield": 0.84,
+    "volume": 27231107
+  },
+  {
+    "code": "PCAR",
+    "pe": 83.38,
+    "pb": 3.28,
+    "eps": 7.13,
+    "market_capitalization": 236730551434,
+    "dividend_yield": 2.86,
+    "volume": 24606324
+  },
+  {
+    "code": "PTON",
+    "pe": 43.91,
+    "pb": 4.8,
+    "eps": 12.08,
+    "market_capitalization": 184508393046,
+    "dividend_yield": 2.1,
+    "volume": 54565714
+  },
+  {
+    "code": "PYPL",
+    "pe": 96.01,
+    "pb": 1.94,
+    "eps": 5.17,
+    "market_capitalization": 402886858647,
+    "dividend_yield": 3.57,
+    "volume": 35782012
+  },
+  {
+    "code": "ROST",
+    "pe": 59.69,
+    "pb": 9.34,
+    "eps": 9.43,
+    "market_capitalization": 286023496657,
+    "dividend_yield": 2.16,
+    "volume": 75374014
+  },
+  {
+    "code": "SBUX",
+    "pe": 44.94,
+    "pb": 14.77,
+    "eps": 1.93,
+    "market_capitalization": 296275737110,
+    "dividend_yield": 1.83,
+    "volume": 87407749
+  },
+  {
+    "code": "SGEN",
+    "pe": 78.69,
+    "pb": 6.33,
+    "eps": 6.71,
+    "market_capitalization": 491145989309,
+    "dividend_yield": 3.97,
+    "volume": 79039798
+  },
+  {
+    "code": "SIRI",
+    "pe": 59.7,
+    "pb": 9.44,
+    "eps": 13.52,
+    "market_capitalization": 254680508047,
+    "dividend_yield": 1.18,
+    "volume": 35960235
+  },
+  {
+    "code": "SNPS",
+    "pe": 37.14,
+    "pb": 11.25,
+    "eps": 12.08,
+    "market_capitalization": 189056474012,
+    "dividend_yield": 1.41,
+    "volume": 45822260
+  },
+  {
+    "code": "TEAM",
+    "pe": 73.96,
+    "pb": 7.37,
+    "eps": 2.71,
+    "market_capitalization": 385218521386,
+    "dividend_yield": 2.79,
+    "volume": 16380217
+  },
+  {
+    "code": "TMUS",
+    "pe": 11.81,
+    "pb": 4.28,
+    "eps": 13.29,
+    "market_capitalization": 265695475003,
+    "dividend_yield": 2.76,
+    "volume": 59385989
+  },
+  {
+    "code": "TTWO",
+    "pe": 95.07,
+    "pb": 12.35,
+    "eps": 5.33,
+    "market_capitalization": 396141310927,
+    "dividend_yield": 0.98,
+    "volume": 32134656
+  },
+  {
+    "code": "TXN",
+    "pe": 83.39,
+    "pb": 1.02,
+    "eps": 8.86,
+    "market_capitalization": 481142142924,
+    "dividend_yield": 1.15,
+    "volume": 22157400
+  },
+  {
+    "code": "UAL",
+    "pe": 87.32,
+    "pb": 7.78,
+    "eps": 14.57,
+    "market_capitalization": 42520576833,
+    "dividend_yield": 1.27,
+    "volume": 77079201
+  },
+  {
+    "code": "VRSK",
+    "pe": 59.21,
+    "pb": 12.02,
+    "eps": 8.35,
+    "market_capitalization": 415186215021,
+    "dividend_yield": 1.89,
+    "volume": 61161618
+  },
+  {
+    "code": "VRTX",
+    "pe": 71.46,
+    "pb": 14.6,
+    "eps": 8.39,
+    "market_capitalization": 421165161986,
+    "dividend_yield": 3.23,
+    "volume": 12097672
+  },
+  {
+    "code": "WBA",
+    "pe": 13.16,
+    "pb": 9.69,
+    "eps": 8.68,
+    "market_capitalization": 379066753841,
+    "dividend_yield": 1.89,
+    "volume": 19606804
+  },
+  {
+    "code": "WDAY",
+    "pe": 64.84,
+    "pb": 13.34,
+    "eps": 2.97,
+    "market_capitalization": 65093621210,
+    "dividend_yield": 1.57,
+    "volume": 48897700
+  },
+  {
+    "code": "XEL",
+    "pe": 63.12,
+    "pb": 6.34,
+    "eps": 1.9,
+    "market_capitalization": 293501447042,
+    "dividend_yield": 3.44,
+    "volume": 64401502
+  },
+  {
+    "code": "ZM",
+    "pe": 96.09,
+    "pb": 8.45,
+    "eps": 11.78,
+    "market_capitalization": 372888607330,
+    "dividend_yield": 2.67,
+    "volume": 53407522
+  },
+  {
+    "code": "ZS",
+    "pe": 66.88,
+    "pb": 13.52,
+    "eps": 8.53,
+    "market_capitalization": 394045498038,
+    "dividend_yield": 1.78,
+    "volume": 63404734
+  }
+]

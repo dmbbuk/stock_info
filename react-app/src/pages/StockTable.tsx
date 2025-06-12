@@ -1,10 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { hotTickers } from "../constants/hotTickers";
 import { useStockSocket } from "../hooks/useStockSocket";
 import { fetchFundamentalsFor } from "../components/service/fundamentalsFetcher";
 import { formatTime } from "../utils/formatTime";
-import type { RealtimePrice } from "../types/realtime";
-import type { Fundamentals } from "../types/fundamentals";
+import type { Fundamentals } from "shared-types/src/fundamentals";
+import type { RealtimePrice } from "shared-types/src/realtime";
 import {
   ColumnDef,
   flexRender,
@@ -23,10 +22,9 @@ import {
 } from "@/components/ui/table";
 import FundamentalSettings from "./FundamentalSettings";
 import FundamentalFilter from "./FundamentalFilter";
-
 import SearchBar from "./SearchBar";
 
-interface StockRow {
+type StockRow = {
   ticker: string;
   price: string;
   time: string;
@@ -35,11 +33,16 @@ interface StockRow {
   EPS: string;
   marketCap: string;
   dividendYield: string;
-}
+  volume: string;
+};
 
 const StockTable = () => {
-  // 검색바
   const [searchQuery, setSearchQuery] = useState("");
+  const [tickers, setTickers] = useState<string[]>([]);
+  const [fundamentals, setFundamentals] = useState<
+    Record<string, Fundamentals>
+  >({});
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const [fundamentalFilters, setFundamentalFilters] = useState({
     per: "ALL",
@@ -48,14 +51,6 @@ const StockTable = () => {
     dividend: "ALL",
   });
 
-  const updateFundamentalFilter = (
-    key: keyof typeof fundamentalFilters,
-    value: string
-  ) => {
-    setFundamentalFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  // 펀더멘탈 세팅
   const [enabledMetrics, setEnabledMetrics] = useState([
     "PER",
     "EPS",
@@ -64,23 +59,43 @@ const StockTable = () => {
     "dividendYield",
   ]);
 
-  const { latestPrices, subscribeTickers } = useStockSocket(hotTickers);
-  const [fundamentals, setFundamentals] = useState<
-    Record<string, Fundamentals>
-  >({});
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const updateFundamentalFilter = (
+    key: keyof typeof fundamentalFilters,
+    value: string
+  ) => {
+    setFundamentalFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const fetchHotTickers = async () => {
+    const res = await fetch("http://localhost:3000/api/stocks/hot-tickers");
+    const { tickers, fundamentals } = await res.json();
+    setTickers(tickers);
+    if (fundamentals && Object.keys(fundamentals).length > 0) {
+      setFundamentals(fundamentals);
+    }
+  };
 
   useEffect(() => {
-    subscribeTickers(hotTickers);
+    fetchHotTickers();
+  }, []);
+
+  const { latestPrices, subscribeTickers } = useStockSocket(tickers);
+
+  useEffect(() => {
+    if (tickers.length === 0) return;
+    subscribeTickers(tickers);
+
+    if (Object.keys(fundamentals).length > 0) return;
+
     const loadFundamentals = async () => {
-      const data = await fetchFundamentalsFor(hotTickers);
+      const data = await fetchFundamentalsFor(tickers);
       setFundamentals(data);
     };
     loadFundamentals();
-  }, []);
+  }, [tickers]);
 
   const allData: StockRow[] = useMemo(() => {
-    return hotTickers.map((ticker) => {
+    return tickers.map((ticker) => {
       const priceData: RealtimePrice | undefined = latestPrices[ticker];
       const f = fundamentals[ticker];
 
@@ -94,15 +109,14 @@ const StockTable = () => {
         marketCap: f?.marketCap?.toLocaleString() ?? "-",
         dividendYield:
           f?.dividendYield != null ? `${f.dividendYield.toFixed(2)}%` : "-",
+        volume: f?.volume?.toLocaleString() ?? "-",
       };
     });
-  }, [latestPrices, fundamentals]);
+  }, [tickers, latestPrices, fundamentals]);
 
-  // searchQuery 적용된 필터링된 데이터 생성
   const filteredData = useMemo(() => {
     let filtered = allData;
 
-    // 검색어
     if (searchQuery) {
       filtered = filtered.filter((item) =>
         item.ticker.toLowerCase().includes(searchQuery.toLowerCase())
@@ -111,7 +125,6 @@ const StockTable = () => {
 
     const { per, eps, pbr, dividend } = fundamentalFilters;
 
-    // PER 필터
     if (per !== "ALL") {
       filtered = filtered.filter((item) => {
         const value = parseFloat(item.PER);
@@ -124,7 +137,6 @@ const StockTable = () => {
       });
     }
 
-    // EPS 필터
     if (eps !== "ALL") {
       filtered = filtered.filter((item) => {
         const value = parseFloat(item.EPS);
@@ -136,7 +148,6 @@ const StockTable = () => {
       });
     }
 
-    // PBR 필터
     if (pbr !== "ALL") {
       filtered = filtered.filter((item) => {
         const value = parseFloat(item.PBR);
@@ -148,7 +159,6 @@ const StockTable = () => {
       });
     }
 
-    // 배당 필터
     if (dividend !== "ALL") {
       filtered = filtered.filter((item) => {
         const value = parseFloat(item.dividendYield.replace("%", ""));
@@ -179,15 +189,15 @@ const StockTable = () => {
           PBR: "PBR",
           marketCap: "시가총액",
           dividendYield: "배당수익률",
+          volume: "거래량",
         }[key] ?? key,
     }));
 
     return [...base, ...dynamic];
   }, [enabledMetrics]);
 
-  // table data를 filteredData로 교체
   const table = useReactTable({
-    data: filteredData, // ← 여기 수정됨
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -202,6 +212,14 @@ const StockTable = () => {
         enabledMetrics={enabledMetrics}
         onChange={setEnabledMetrics}
       />
+      <div className="mb-4 flex gap-2">
+        <button
+          onClick={fetchHotTickers}
+          className="bg-[#FF4C4C] text-white px-3 py-1 rounded text-sm"
+        >
+          HOT한 종목 100개
+        </button>
+      </div>
       <FundamentalFilter
         filters={fundamentalFilters}
         onChange={updateFundamentalFilter}

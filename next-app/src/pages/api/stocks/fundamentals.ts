@@ -1,21 +1,13 @@
 // src/pages/api/stocks/fundamentals.ts
 import type { NextApiRequest, NextApiResponse } from "next";
+import { handleCors } from "../../../lib/cors";
 import { mockFundamentals } from "../../../mocks/mockFundamentalData";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  if (req.method === "OPTIONS") {
-    res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    return res.status(200).end();
-  }
-
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  if (handleCors(req, res)) return;
 
   const { symbol } = req.query;
 
@@ -23,8 +15,8 @@ export default async function handler(
     return res.status(400).json({ error: "symbol is required" });
   }
 
-  // [모드 전환용] 실제 호출 대신 mock 사용
-  const isMockMode = true;
+  // .env에 따라 mock 모드 전환
+  const isMockMode = process.env.USE_MOCK_FUNDAMENTALS === "true";
 
   if (isMockMode) {
     const mockData = mockFundamentals[symbol];
@@ -53,7 +45,6 @@ export default async function handler(
         .json({ error: "No fundamental data returned from EODHD" });
     }
 
-    // 필요한 항목만 골라서 반환 (기존 프론트 호환 위해)
     const formatted = {
       peRatio: data.Highlights.PERatioTTM,
       pbRatio: data.Highlights.PriceBookMRQ,
