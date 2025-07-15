@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
-import { useStockSocket } from "../hooks/useStockSocket";
 import { fetchFundamentalsFor } from "../components/service/fundamentalsFetcher";
-import { formatTime } from "../utils/formatTime";
-import type { Fundamentals } from "shared-types/src/fundamentals";
-import type { RealtimePrice } from "shared-types/src/realtime";
+import type { FundamentalData } from "shared-types/src/fundamentalTypes";
+import type { FilterSetTypes } from "shared-types/src/FilterSetTypes";
+import { fetchDailyClosePriceFor } from "../components/service/dailyPriceFetcher";
+
 import {
   ColumnDef,
   flexRender,
@@ -24,183 +24,200 @@ import {
 import FundamentalSettings from "./FundamentalSettings";
 import FundamentalFilter from "./FundamentalFilter";
 import SearchBar from "./SearchBar";
+import PredefinedFilterTabs from "./PredefinedFilterTabs";
 
+// 표시용 테이블 필드만
 type StockRow = {
   ticker: string;
+  name: string;
   price: string;
-  time: string;
-  PER: string;
-  PBR: string;
-  EPS: string;
   marketCap: string;
-  dividendYield: string;
   volume: string;
+  PER: string;
+  summary: string;
 };
+
+// 필터 문자열 파싱 함수
+function parseRangeFilter(
+  filter: string
+): { min?: number; max?: number } | null {
+  if (!filter || filter === "ALL") return null;
+  if (filter.startsWith("-")) return { max: parseFloat(filter.slice(1)) };
+  if (filter.endsWith("-")) return { min: parseFloat(filter.slice(0, -1)) };
+  if (filter.includes("-")) {
+    const [min, max] = filter.split("-");
+    return { min: parseFloat(min), max: parseFloat(max) };
+  }
+  return null;
+}
 
 const StockTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [tickers, setTickers] = useState<string[]>([]);
   const [fundamentals, setFundamentals] = useState<
-    Record<string, Fundamentals>
+    Record<string, FundamentalData>
   >({});
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pageSize, setPageSize] = useState(20);
   const [pageIndex, setPageIndex] = useState(0);
+  const [dailyCloses, setDailyCloses] = useState<Record<string, number>>({});
+  const [showCustomFilter, setShowCustomFilter] = useState(false);
 
-  const [fundamentalFilters, setFundamentalFilters] = useState({
-    per: "ALL",
-    eps: "ALL",
-    pbr: "ALL",
-    dividend: "ALL",
-  });
+  // 필터의 기본 상태
+  const initialFilterState: FilterSetTypes = {
+    PER: "ALL",
+    EPS: "ALL",
+    PBR: "ALL",
+    dividendYield: "ALL",
+    PEG: "ALL",
+    payoutRatio: "ALL",
+    roe: "ALL",
+    epsGrowth: "ALL",
+    revenueGrowth: "ALL",
+    evEbitda: "ALL",
+    operatingMargin: "ALL",
+    profitMargin: "ALL",
+    evEbit: "ALL",
+    EBITDA: "ALL",
+    WallStreetTargetPrice: "ALL",
+    BookValue: "ALL",
+    DividendShare: "ALL",
+    EPSEstimateCurrentYear: "ALL",
+    EPSEstimateNextYear: "ALL",
+    EPSEstimateNextQuarter: "ALL",
+    EPSEstimateCurrentQuarter: "ALL",
+    ReturnOnAssetsTTM: "ALL",
+    RevenueTTM: "ALL",
+    RevenuePerShareTTM: "ALL",
+    QuarterlyRevenueGrowthYOY: "ALL",
+    GrossProfitTTM: "ALL",
+    QuarterlyEarningsGrowthYOY: "ALL",
+    marketCap: "ALL",
+    volume: "ALL",
+  };
 
-  const [enabledMetrics, setEnabledMetrics] = useState([
-    "PER",
-    "EPS",
-    "PBR",
+  const [fundamentalFilters, setFundamentalFilters] =
+    useState(initialFilterState);
+
+  // 컬럼 세팅 (표시 컬럼만)
+  const enabledMetrics = [
+    "ticker",
+    "name",
+    "price",
     "marketCap",
-    "dividendYield",
-  ]);
+    "volume",
+    "PER",
+    "summary",
+  ];
 
-  const updateFundamentalFilter = (
-    key: keyof typeof fundamentalFilters,
-    value: string
-  ) => {
-    setFundamentalFilters((prev) => ({ ...prev, [key]: value }));
-  };
-
-  const fetchHotTickers = async () => {
-    const res = await fetch("http://localhost:3000/api/stocks/hot-tickers");
-    const { tickers, fundamentals } = await res.json();
-    setTickers(tickers);
-    if (fundamentals && Object.keys(fundamentals).length > 0) {
-      setFundamentals(fundamentals);
-    }
-  };
-
+  // 최초 마운트 시 fundamentals 전체 fetch
   useEffect(() => {
-    fetchHotTickers();
+    const fetchAllFundamentals = async () => {
+      const data = await fetchFundamentalsFor();
+      setFundamentals(data);
+      setTickers(Object.keys(data));
+    };
+    fetchAllFundamentals();
   }, []);
 
-  const { latestPrices, subscribeTickers } = useStockSocket(tickers);
-
+  // 종가 fetch
   useEffect(() => {
     if (tickers.length === 0) return;
-    subscribeTickers(tickers);
-
-    if (Object.keys(fundamentals).length > 0) return;
-
-    const loadFundamentals = async () => {
-      const data = await fetchFundamentalsFor(tickers);
-      setFundamentals(data);
+    const loadDailyCloses = async () => {
+      const closes = await fetchDailyClosePriceFor(tickers);
+      setDailyCloses(closes);
     };
-    loadFundamentals();
+    loadDailyCloses();
   }, [tickers]);
 
-  const allData: StockRow[] = useMemo(() => {
-    return tickers.map((ticker) => {
-      const priceData: RealtimePrice | undefined = latestPrices[ticker];
+  useEffect(() => setPageIndex(0), [searchQuery]);
+
+  // 숫자/문자 변환 유틸
+  const getNumberOrDash = (val?: number | string, digits = 2, suffix = "") =>
+    val != null && val !== ""
+      ? typeof val === "number"
+        ? val.toFixed(digits) + suffix
+        : val
+      : "-";
+
+  // 1. 필터 조건에 부합하는 티커만 남김 (모든 필드 대상)
+  const filteredTickers = useMemo(() => {
+    return tickers.filter((ticker) => {
       const f = fundamentals[ticker];
+      if (!f) return false;
+      // 모든 필터 조건을 통과해야 남김
+      return Object.entries(fundamentalFilters).every(([key, filterValue]) => {
+        if (filterValue === "ALL") return true;
+        // sector 등 문자열 필드는 따로 처리하고 싶으면 추가
+        const raw = f[key as keyof FundamentalData];
+        if (raw == null) return false;
+        // 숫자형 비교
+        const value =
+          typeof raw === "string"
+            ? parseFloat(raw.replace(/,/g, ""))
+            : Number(raw);
+        if (isNaN(value)) return false;
+        const range = parseRangeFilter(filterValue);
+        if (!range) return true;
+        if (range.min !== undefined && value < range.min) return false;
+        if (range.max !== undefined && value >= range.max) return false;
+        return true;
+      });
+    });
+  }, [tickers, fundamentals, fundamentalFilters]);
+
+  // 2. 이 티커들만 표 데이터로 가공 (표시용 필드만)
+  const allData: StockRow[] = useMemo(() => {
+    return filteredTickers.map((ticker) => {
+      const f = fundamentals[ticker];
+      const closePrice = dailyCloses[ticker];
+
+      const summaryArr = [
+        f?.sector ?? "",
+        f?.dividendYield
+          ? `배당 ${getNumberOrDash(f.DividendShare, 2, "%")}`
+          : "",
+        f?.EPS != null ? `EPS ${getNumberOrDash(f.EPS)}` : "",
+        f?.PBR != null ? `PBR ${getNumberOrDash(f.PBR)}` : "",
+      ];
+      const summary = summaryArr.filter(Boolean).join(" / ");
 
       return {
         ticker,
-        price: priceData?.price?.toFixed(2) ?? "-",
-        time: formatTime(priceData?.timestamp),
-        PER: f?.PER?.toFixed(2) ?? "-",
-        PBR: f?.PBR?.toFixed(2) ?? "-",
-        EPS: f?.EPS?.toFixed(2) ?? "-",
-        marketCap: f?.marketCap?.toLocaleString() ?? "-",
-        dividendYield:
-          f?.dividendYield != null ? `${f.dividendYield.toFixed(2)}%` : "-",
-        volume: f?.volume?.toLocaleString() ?? "-",
+        name: f?.name ?? "-",
+        price: closePrice != null ? closePrice.toFixed(2) : "-",
+        marketCap: f?.marketCap ? Number(f.marketCap).toLocaleString() : "-",
+        volume: f?.volume ? Number(f.volume).toLocaleString() : "-",
+        PER: f?.PER != null ? getNumberOrDash(f.PER) : "-",
+        summary,
       };
     });
-  }, [tickers, latestPrices, fundamentals]);
+  }, [filteredTickers, dailyCloses, fundamentals]);
 
-  const filteredData = useMemo(() => {
-    let filtered = allData;
+  // 검색(티커/회사명)
+  const searchedData = useMemo(() => {
+    if (!searchQuery) return allData;
+    return allData.filter(
+      (item) =>
+        item.ticker.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [allData, searchQuery]);
 
-    if (searchQuery) {
-      filtered = filtered.filter((item) =>
-        item.ticker.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-    }
+  // 컬럼 정의
+  const columns: ColumnDef<StockRow>[] = [
+    { accessorKey: "ticker", header: "티커" },
+    { accessorKey: "name", header: "회사명" },
+    { accessorKey: "price", header: "가격" },
+    { accessorKey: "marketCap", header: "시가총액" },
+    { accessorKey: "volume", header: "거래량" },
+    { accessorKey: "PER", header: "PER" },
+    { accessorKey: "summary", header: "요약" },
+  ];
 
-    const { per, eps, pbr, dividend } = fundamentalFilters;
-
-    if (per !== "ALL") {
-      filtered = filtered.filter((item) => {
-        const value = parseFloat(item.PER);
-        if (isNaN(value)) return false;
-        if (per === "<10") return value < 10;
-        if (per === "10-20") return value >= 10 && value < 20;
-        if (per === "20-40") return value >= 20 && value < 40;
-        if (per === "≥40") return value >= 40;
-        return true;
-      });
-    }
-
-    if (eps !== "ALL") {
-      filtered = filtered.filter((item) => {
-        const value = parseFloat(item.EPS);
-        if (isNaN(value)) return false;
-        if (eps === "<1") return value < 1;
-        if (eps === "1-5") return value >= 1 && value < 5;
-        if (eps === "≥5") return value >= 5;
-        return true;
-      });
-    }
-
-    if (pbr !== "ALL") {
-      filtered = filtered.filter((item) => {
-        const value = parseFloat(item.PBR);
-        if (isNaN(value)) return false;
-        if (pbr === "<1") return value < 1;
-        if (pbr === "1-3") return value >= 1 && value < 3;
-        if (pbr === "≥3") return value >= 3;
-        return true;
-      });
-    }
-
-    if (dividend !== "ALL") {
-      filtered = filtered.filter((item) => {
-        const value = parseFloat(item.dividendYield.replace("%", ""));
-        if (isNaN(value)) return false;
-        if (dividend === "<1") return value < 1;
-        if (dividend === "1-3") return value >= 1 && value < 3;
-        if (dividend === "≥3") return value >= 3;
-        return true;
-      });
-    }
-
-    return filtered;
-  }, [allData, searchQuery, fundamentalFilters]);
-
-  const columns: ColumnDef<StockRow>[] = useMemo(() => {
-    const base: ColumnDef<StockRow>[] = [
-      { accessorKey: "ticker", header: "Ticker" },
-      { accessorKey: "price", header: "Price" },
-      { accessorKey: "time", header: "Time", enableSorting: false },
-    ];
-
-    const dynamic = enabledMetrics.map((key) => ({
-      accessorKey: key,
-      header:
-        {
-          PER: "PER",
-          EPS: "EPS",
-          PBR: "PBR",
-          marketCap: "시가총액",
-          dividendYield: "배당수익률",
-          volume: "거래량",
-        }[key] ?? key,
-    }));
-
-    return [...base, ...dynamic];
-  }, [enabledMetrics]);
-
+  // React Table 인스턴스
   const table = useReactTable({
-    data: filteredData,
+    data: searchedData,
     columns,
     state: {
       sorting,
@@ -215,18 +232,14 @@ const StockTable = () => {
         typeof updater === "function"
           ? updater({ pageSize, pageIndex })
           : updater;
-
       if (newPagination.pageIndex !== pageIndex)
         setPageIndex(newPagination.pageIndex);
-
       if (newPagination.pageSize !== pageSize)
         setPageSize(newPagination.pageSize);
     },
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-
-    // 👇 이거 꼭 추가해야 "페이지 유지"됨
     autoResetPageIndex: false,
   });
 
@@ -235,21 +248,50 @@ const StockTable = () => {
       <SearchBar searchQuery={searchQuery} onChange={setSearchQuery} />
       <FundamentalSettings
         enabledMetrics={enabledMetrics}
-        onChange={setEnabledMetrics}
+        onChange={() => {}}
       />
+      <PredefinedFilterTabs
+        onApplyFilter={(partialFilters) => {
+          setFundamentalFilters({
+            ...initialFilterState,
+            ...partialFilters,
+          });
+        }}
+      />
+      {showCustomFilter && (
+        <div className="mt-2">
+          <div className="mb-2 flex justify-between items-center">
+            <span className="text-sm text-gray-300">
+              필터 조건을 선택하세요
+            </span>
+          </div>
+          <FundamentalFilter
+            filters={fundamentalFilters}
+            onChange={(field, value) => {
+              setFundamentalFilters((prev) => ({
+                ...prev,
+                [field]: value,
+              }));
+            }}
+          />
+        </div>
+      )}
       <div className="mb-4 flex gap-2">
         <button
-          onClick={fetchHotTickers}
-          className="bg-[#FF4C4C] text-white px-3 py-1 rounded text-sm"
+          onClick={() => setShowCustomFilter((prev) => !prev)}
+          className="bg-[#444466] text-white text-sm px-3 py-1 rounded"
         >
-          HOT한 종목 100개
+          {showCustomFilter ? "필터링 닫기" : "커스텀 필터링"}
         </button>
+        {showCustomFilter && (
+          <button
+            onClick={() => setFundamentalFilters(initialFilterState)}
+            className="bg-gray-600 text-white text-sm px-3 py-1 rounded hover:bg-gray-500"
+          >
+            필터링 초기화
+          </button>
+        )}
       </div>
-      <FundamentalFilter
-        filters={fundamentalFilters}
-        onChange={updateFundamentalFilter}
-      />
-
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold">실시간 주식 데이터</h1>
         <div className="flex items-center gap-2 text-sm">
@@ -259,7 +301,7 @@ const StockTable = () => {
             onChange={(e) => {
               const newSize = Number(e.target.value);
               setPageSize(newSize);
-              setPageIndex(0); // 👈 페이지 사이즈 바꾸면 1페이지로
+              setPageIndex(0);
             }}
             className="text-black rounded px-2 py-1"
           >
@@ -271,7 +313,6 @@ const StockTable = () => {
           </select>
         </div>
       </div>
-
       <Table>
         <TableHeader className="bg-[#2A2A40] sticky top-0 z-10">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -319,8 +360,8 @@ const StockTable = () => {
       </Table>
       <div className="flex justify-end items-center mt-4 gap-4 text-sm">
         <span>
-          총 {filteredData.length}개 중 {pageIndex * pageSize + 1}~
-          {Math.min((pageIndex + 1) * pageSize, filteredData.length)}개 표시 중
+          총 {searchedData.length}개 중 {pageIndex * pageSize + 1}~
+          {Math.min((pageIndex + 1) * pageSize, searchedData.length)}개 표시 중
         </span>
         <div className="flex gap-2">
           <button

@@ -1,0 +1,838 @@
+
+  "General": {
+    "Code": "AAPL",
+    "Type": "Common Stock",
+    "Name": "Apple Inc",
+    "Exchange": "NASDAQ",
+    "CurrencyCode": "USD",
+    "CurrencyName": "US Dollar",
+    "CurrencySymbol": "$",
+    "CountryName": "USA",
+    "CountryISO": "US",
+    "OpenFigi": "BBG000B9XRY4",
+    "ISIN": "US0378331005",
+    "LEI": "HWUPKR0MPOU8FGXBT394",
+    "PrimaryTicker": "AAPL.US",
+    "CUSIP": "037833100",
+    "CIK": "320193",
+    "EmployerIdNumber": "94-2404110",
+    "FiscalYearEnd": "September",
+    "IPODate": "1980-12-12",
+    "InternationalDomestic": "International/Domestic",
+    "Sector": "Technology",
+    "Industry": "Consumer Electronics",
+    "GicSector": "Information Technology",
+    "GicGroup": "Technology Hardware & Equipment",
+    "GicIndustry": "Technology Hardware, Storage & Peripherals",
+    "GicSubIndustry": "Technology Hardware, Storage & Peripherals",
+    "HomeCategory": "Domestic",
+    "IsDelisted": false,
+    "Description": "Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide. The company offers iPhone, a line of smartphones; Mac, a line of personal computers; iPad, a line of multi-purpose tablets; and wearables, home, and accessories comprising AirPods, Apple TV, Apple Watch, Beats products, and HomePod. It also provides AppleCare support and cloud services; and operates various platforms, including the App Store that allow customers to discover and download applications and digital content, such as books, music, video, games, and podcasts, as well as advertising services include third-party licensing arrangements and its own advertising platforms. In addition, the company offers various subscription-based services, such as Apple Arcade, a game subscription service; Apple Fitness+, a personalized fitness service; Apple Music, which offers users a curated listening experience with on-demand radio stations; Apple News+, a subscription news and magazine service; Apple TV+, which offers exclusive original content; Apple Card, a co-branded credit card; and Apple Pay, a cashless payment service, as well as licenses its intellectual property. The company serves consumers, and small and mid-sized businesses; and the education, enterprise, and government markets. It distributes third-party applications for its products through the App Store. The company also sells its products through its retail and online stores, and direct sales force; and third-party cellular network carriers, wholesalers, retailers, and resellers. Apple Inc. was founded in 1976 and is headquartered in Cupertino, California.",
+    "Address": "One Apple Park Way, Cupertino, CA, United States, 95014",
+    "AddressData": {
+      "Street": "One Apple Park Way",
+      "City": "Cupertino",
+      "State": "CA",
+      "Country": "United States",
+      "ZIP": "95014"
+    },
+    "Listings": {
+      "0": {
+        "Code": "0R2V",
+        "Exchange": "LSE",
+        "Name": "Apple Inc."
+      },
+      "1": {
+        "Code": "AAPL",
+        "Exchange": "BA",
+        "Name": "Apple Inc DRC"
+      },
+      "2": {
+        "Code": "AAPL34",
+        "Exchange": "SA",
+        "Name": "Apple Inc"
+      }
+    },
+    "Officers": {
+      "0": {
+        "Name": "Mr. Timothy D. Cook",
+        "Title": "CEO & Director",
+        "YearBorn": "1961"
+      },
+      "1": {
+        "Name": "Mr. Jeffrey E. Williams",
+        "Title": "Chief Operating Officer",
+        "YearBorn": "1964"
+      },
+      "2": {
+        "Name": "Ms. Katherine L. Adams",
+        "Title": "Senior VP, General Counsel & Secretary",
+        "YearBorn": "1964"
+      },
+      "3": {
+        "Name": "Ms. Deirdre  O'Brien",
+        "Title": "Chief People Officer & Senior VP of Retail",
+        "YearBorn": "1967"
+      },
+      "4": {
+        "Name": "Mr. Kevan  Parekh",
+        "Title": "Senior VP & CFO",
+        "YearBorn": "1972"
+      },
+      "5": {
+        "Name": "Mr. Chris  Kondo",
+        "Title": "Senior Director of Corporate Accounting",
+        "YearBorn": "NA"
+      },
+      "6": {
+        "Name": "Suhasini  Chandramouli",
+        "Title": "Director of Investor Relations",
+        "YearBorn": "NA"
+      },
+      "7": {
+        "Name": "Mr. Greg  Joswiak",
+        "Title": "Senior Vice President of Worldwide Marketing",
+        "YearBorn": "NA"
+      },
+      "8": {
+        "Name": "Mr. Adrian  Perica",
+        "Title": "Head of Corporate Development",
+        "YearBorn": "1974"
+      },
+      "9": {
+        "Name": "Mr. Michael  Fenger",
+        "Title": "VP of Worldwide Sales",
+        "YearBorn": "NA"
+      }
+    },
+    "Phone": "(408) 996-1010",
+    "WebURL": "https://www.apple.com",
+    "LogoURL": "/img/logos/US/aapl.png",
+    "FullTimeEmployees": 164000,
+    "UpdatedAt": "2025-01-21"
+  },
+  "Highlights": {
+    "MarketCapitalization": 3458400518144,
+    "MarketCapitalizationMln": 3458400.5181,
+    "EBITDA": 134660997120,
+    "PERatio": 37.8639,
+    "PEGRatio": 2.0958,
+    "WallStreetTargetPrice": 246.1405,
+    "BookValue": 3.767,
+    "DividendShare": 0.98,
+    "DividendYield": 0.0043,
+    "EarningsShare": 5.88,
+    "EPSEstimateCurrentYear": 7.368,
+    "EPSEstimateNextYear": 8.2441,
+    "EPSEstimateNextQuarter": 2.38,
+    "EPSEstimateCurrentQuarter": 1.6,
+    "MostRecentQuarter": "2024-09-30",
+    "ProfitMargin": 0.2397,
+    "OperatingMarginTTM": 0.3117,
+    "ReturnOnAssetsTTM": 0.2146,
+    "ReturnOnEquityTTM": 1.5741,
+    "RevenueTTM": 391034994688,
+    "RevenuePerShareTTM": 25.485,
+    "QuarterlyRevenueGrowthYOY": 0.061,
+    "GrossProfitTTM": 180682997760,
+    "DilutedEpsTTM": 5.88,
+    "QuarterlyEarningsGrowthYOY": -0.341
+  },
+  "Valuation": {
+    "TrailingPE": 37.8639,
+    "ForwardPE": 30.7692,
+    "PriceSalesTTM": 8.8442,
+    "PriceBookMRQ": 60.7271,
+    "EnterpriseValue": 3499868262520,
+    "EnterpriseValueRevenue": 8.9503,
+    "EnterpriseValueEbitda": 25.9902
+  },
+  "SharesStats": {
+    "SharesOutstanding": 15037899776,
+    "SharesFloat": 15091184209,
+    "PercentInsiders": 2.0660000000000003,
+    "PercentInstitutions": 62.25000000000001,
+    "SharesShort": null,
+    "SharesShortPriorMonth": null,
+    "ShortRatio": null,
+    "ShortPercentOutstanding": null,
+    "ShortPercentFloat": 0.0104
+  },
+  "Technicals": {
+    "Beta": 1.24,
+    "52WeekHigh": 260.1,
+    "52WeekLow": 163.4884,
+    "50DayMA": 239.2966,
+    "200DayMA": 217.0157,
+    "SharesShort": 157008120,
+    "SharesShortPriorMonth": 156458273,
+    "ShortRatio": 3.37,
+    "ShortPercent": 0.0104
+  },
+  "SplitsDividends": {
+    "ForwardAnnualDividendRate": 1,
+    "ForwardAnnualDividendYield": 0.0043,
+    "PayoutRatio": 0.1467,
+    "DividendDate": "2024-11-14",
+    "ExDividendDate": "2024-11-08",
+    "LastSplitFactor": "4:1",
+    "LastSplitDate": "2020-08-31",
+    "NumberDividendsByYear": {
+      "0": {
+        "Year": 1987,
+        "Count": 3
+      },
+      "1": {
+        "Year": 1988,
+        "Count": 4
+      },
+      "2": {
+        "Year": 1989,
+        "Count": 4
+      },
+      "3": {
+        "Year": 1990,
+        "Count": 4
+      },
+      "4": {
+        "Year": 1991,
+        "Count": 4
+      },
+      "5": {
+        "Year": 1992,
+        "Count": 4
+      },
+      "6": {
+        "Year": 1993,
+        "Count": 4
+      },
+      "7": {
+        "Year": 1994,
+        "Count": 4
+      },
+      "8": {
+        "Year": 1995,
+        "Count": 4
+      },
+      "9": {
+        "Year": 2012,
+        "Count": 2
+      },
+      "10": {
+        "Year": 2013,
+        "Count": 4
+      },
+      "11": {
+        "Year": 2014,
+        "Count": 4
+      },
+      "12": {
+        "Year": 2015,
+        "Count": 4
+      },
+      "13": {
+        "Year": 2016,
+        "Count": 4
+      },
+      "14": {
+        "Year": 2017,
+        "Count": 4
+      },
+      "15": {
+        "Year": 2018,
+        "Count": 4
+      },
+      "16": {
+        "Year": 2019,
+        "Count": 4
+      },
+      "17": {
+        "Year": 2020,
+        "Count": 4
+      },
+      "18": {
+        "Year": 2021,
+        "Count": 4
+      },
+      "19": {
+        "Year": 2022,
+        "Count": 4
+      },
+      "20": {
+        "Year": 2023,
+        "Count": 4
+      },
+      "21": {
+        "Year": 2024,
+        "Count": 4
+      }
+    }
+  },
+  "AnalystRatings": {
+    "Rating": 4.1064,
+    "TargetPrice": 247.925,
+    "StrongBuy": 24,
+    "Buy": 8,
+    "Hold": 12,
+    "Sell": 2,
+    "StrongSell": 1
+  },
+  "Holders": {
+    "Institutions": {
+      "0": {
+        "name": "Vanguard Group Inc",
+        "date": "2024-09-30",
+        "totalShares": 8.9087,
+        "totalAssets": 5.6185,
+        "currentShares": 1346616669,
+        "change": 21646442,
+        "change_p": 1.6337
+      },
+      "1": {
+        "name": "BlackRock Inc",
+        "date": "2024-09-30",
+        "totalShares": 7.2349,
+        "totalAssets": 5.349,
+        "currentShares": 1093618174,
+        "change": 43402422,
+        "change_p": 4.1327
+      },
+      "2": {
+        "name": "State Street Corp",
+        "date": "2024-09-30",
+        "totalShares": 3.8636,
+        "totalAssets": 5.5369,
+        "currentShares": 584010284,
+        "change": 55935105,
+        "change_p": 10.5923
+      },
+      "3": {
+        "name": "FMR Inc",
+        "date": "2024-09-30",
+        "totalShares": 2.4071,
+        "totalAssets": 5.1587,
+        "currentShares": 363859362,
+        "change": 18224005,
+        "change_p": 5.2726
+      },
+      "4": {
+        "name": "Geode Capital Management, LLC",
+        "date": "2024-09-30",
+        "totalShares": 2.2087,
+        "totalAssets": 6.279,
+        "currentShares": 333857500,
+        "change": 20483787,
+        "change_p": 6.5365
+      },
+      "5": {
+        "name": "Berkshire Hathaway Inc",
+        "date": "2024-09-30",
+        "totalShares": 1.9847,
+        "totalAssets": 26.2408,
+        "currentShares": 300000000,
+        "change": -100000000,
+        "change_p": -25
+      },
+      "6": {
+        "name": "T. Rowe Price Associates, Inc.",
+        "date": "2024-09-30",
+        "totalShares": 1.5585,
+        "totalAssets": 6.3197,
+        "currentShares": 235581369,
+        "change": 7092591,
+        "change_p": 3.1041
+      },
+      "7": {
+        "name": "Morgan Stanley - Brokerage Accounts",
+        "date": "2024-09-30",
+        "totalShares": 1.5312,
+        "totalAssets": 3.9098,
+        "currentShares": 231460925,
+        "change": -230605955,
+        "change_p": -49.9075
+      },
+      "8": {
+        "name": "JPMorgan Chase & Co",
+        "date": "2024-09-30",
+        "totalShares": 1.1829,
+        "totalAssets": 3.1757,
+        "currentShares": 178809389,
+        "change": -1977742,
+        "change_p": -1.094
+      },
+      "9": {
+        "name": "NORGES BANK",
+        "date": "2024-06-30",
+        "totalShares": 1.1745,
+        "totalAssets": 5.5863,
+        "currentShares": 177534454,
+        "change": 1393251,
+        "change_p": 0.791
+      },
+      "10": {
+        "name": "Legal & General Group PLC",
+        "date": "2024-09-30",
+        "totalShares": 1.0255,
+        "totalAssets": 7.5272,
+        "currentShares": 155016460,
+        "change": 9426269,
+        "change_p": 6.4745
+ },
+      "11": {
+        "name": "Northern Trust Corp",
+        "date": "2024-09-30",
+        "totalShares": 1.001,
+        "totalAssets": 5.7712,
+        "currentShares": 151306059,
+        "change": -1653534,
+        "change_p": -1.081
+      },
+      "12": {
+        "name": "Bank of New York Mellon Corp",
+        "date": "2024-09-30",
+        "totalShares": 0.7255,
+        "totalAssets": 4.7522,
+        "currentShares": 109672738,
+        "change": -2720923,
+        "change_p": -2.4209
+      },
+      "13": {
+        "name": "Wellington Management Company LLP",
+        "date": "2024-09-30",
+        "totalShares": 0.6377,
+        "totalAssets": 3.9336,
+        "currentShares": 96394516,
+        "change": -7523962,
+        "change_p": -7.2403
+      },
+      "14": {
+        "name": "Charles Schwab Investment Management Inc",
+        "date": "2024-09-30",
+        "totalShares": 0.6281,
+        "totalAssets": 4.2221,
+        "currentShares": 94942731,
+        "change": 5893741,
+        "change_p": 6.6185
+      },
+      "15": {
+        "name": "International Assets Investment Management, LLC",
+        "date": "2024-09-30",
+        "totalShares": 0.6242,
+        "totalAssets": 1.602,
+        "currentShares": 94347510,
+        "change": 93886664,
+        "change_p": 20372.6763
+      },
+      "16": {
+        "name": "UBS Asset Mgmt Americas Inc",
+        "date": "2024-09-30",
+        "totalShares": 0.6058,
+        "totalAssets": 5.4811,
+        "currentShares": 91568390,
+        "change": 1742087,
+        "change_p": 1.9394
+      },
+      "17": {
+        "name": "Goldman Sachs Group Inc",
+        "date": "2024-09-30",
+        "totalShares": 0.5723,
+        "totalAssets": 3.2457,
+        "currentShares": 86514737,
+        "change": -4060063,
+        "change_p": -4.4826
+      },
+      "18": {
+        "name": "Nuveen Asset Management, LLC",
+        "date": "2024-09-30",
+        "totalShares": 0.5461,
+        "totalAssets": 5.3998,
+        "currentShares": 82544919,
+        "change": 114810,
+        "change_p": 0.1393
+      },
+      "19": {
+        "name": "Bank of America Corp",
+        "date": "2024-09-30",
+        "totalShares": 0.5352,
+        "totalAssets": 1.5647,
+        "currentShares": 80893112,
+        "change": -41754942,
+        "change_p": -34.0445
+      }
+    },
+    "Funds": {
+      "0": {
+        "name": "Vanguard Total Stock Mkt Idx Inv",
+        "date": "2024-12-31",
+        "totalShares": 3.1349,
+        "totalAssets": 6.6656,
+        "currentShares": 473862940,
+        "change": 19839097,
+        "change_p": 4.3696
+      },
+      "1": {
+        "name": "Vanguard Institutional 500 Index Trust",
+        "date": "2024-12-31",
+        "totalShares": 2.7081,
+        "totalAssets": 7.5955,
+        "currentShares": 409358272,
+        "change": 564051,
+        "change_p": 0.138
+      },
+      "2": {
+        "name": "SPDR® S&P 500® ETF Trust",
+        "date": "2024-12-31",
+        "totalShares": 1.2573,
+        "totalAssets": 7.577,
+        "currentShares": 190052772,
+        "change": 2195583,
+        "change_p": 1.1688
+      },
+      "3": {
+        "name": "Fidelity 500 Index",
+        "date": "2024-11-30",
+        "totalShares": 1.2429,
+        "totalAssets": 7.0594,
+        "currentShares": 187875400,
+        "change": 1276562,
+        "change_p": 0.6841
+      },
+      "4": {
+        "name": "iShares Core S&P 500 ETF",
+        "date": "2024-12-31",
+        "totalShares": 1.1742,
+        "totalAssets": 7.5829,
+        "currentShares": 177489633,
+        "change": 124754,
+        "change_p": 0.0703
+      },
+      "5": {
+        "name": "Vanguard Growth Index Investor",
+        "date": "2024-12-31",
+        "totalShares": 1.0081,
+        "totalAssets": 13.3816,
+        "currentShares": 152389527,
+        "change": 15492874,
+        "change_p": 11.3172
+      },
+      "6": {
+        "name": "Invesco QQQ Trust",
+        "date": "2024-12-31",
+        "totalShares": 0.8242,
+        "totalAssets": 9.7861,
+        "currentShares": 124587040,
+        "change": 1318284,
+        "change_p": 1.0694
+      },
+      "7": {
+        "name": "Vanguard Institutional Index I",
+        "date": "2024-12-31",
+        "totalShares": 0.6311,
+        "totalAssets": 7.5888,
+        "currentShares": 95397328,
+        "change": -843973,
+        "change_p": -0.8769
+      },
+      "8": {
+        "name": "State St S&P 500® Indx SL Cl III",
+        "date": "2024-12-31",
+        "totalShares": 0.4803,
+        "totalAssets": 7.5299,
+        "currentShares": 72601766,
+        "change": -1068251,
+        "change_p": -1.45
+      },
+      "9": {
+        "name": "Vanguard Information Technology ETF",
+        "date": "2024-12-31",
+        "totalShares": 0.4498,
+        "totalAssets": 17.0521,
+        "currentShares": 67990581,
+        "change": 984400,
+        "change_p": 1.4691
+      },
+      "10": {
+        "name": "Blackrock Eq Idx Fund CF",
+        "date": "2024-12-31",
+        "totalShares": 0.3756,
+        "totalAssets": 7.5672,
+        "currentShares": 56769608,
+        "change": -776204,
+        "change_p": -1.3488
+      },
+      "11": {
+        "name": "iShares Russell 1000 Growth ETF",
+        "date": "2024-12-31",
+        "totalShares": 0.3424,
+        "totalAssets": 12.1741,
+        "currentShares": 51756198,
+        "change": 29274,
+        "change_p": 0.0566
+      },
+      "12": {
+        "name": "Blackrock Russ 1000 Eq Idx Composite",
+        "date": "2024-09-30",
+        "totalShares": 0.2988,
+        "totalAssets": 6.417,
+        "currentShares": 45164357,
+        "change": 951090,
+        "change_p": 2.1511
+      },
+      "13": {
+        "name": "The Technology Select Sector SPDR® ETF",
+        "date": "2024-12-31",
+        "totalShares": 0.2963,
+        "totalAssets": 15.4199,
+        "currentShares": 44794398,
+        "change": -71720,
+        "change_p": -0.1599
+      },
+      "14": {
+        "name": "Russell 1000 Index Fund",
+        "date": "2024-12-31",
+        "totalShares": 0.2912,
+        "totalAssets": 6.5995,
+        "currentShares": 44017897,
+        "change": -572224,
+        "change_p": -1.2833
+      },
+      "15": {
+        "name": "Fidelity Growth Compy Commingled Pl S",
+        "date": "2024-11-30",
+        "totalShares": 0.2344,
+        "totalAssets": 8.9357,
+        "currentShares": 35427666,
+        "change": -1414616,
+        "change_p": -3.8397
+      },
+      "16": {
+        "name": "iShares Core S&P 500 ETF USD Acc",
+        "date": "2024-12-31",
+        "totalShares": 0.2219,
+        "totalAssets": 7.592,
+        "currentShares": 33539284,
+        "change": 16640,
+        "change_p": 0.0496
+      },
+      "17": {
+        "name": "Fidelity Blue Chip Growth",
+        "date": "2024-11-30",
+        "totalShares": 0.2187,
+        "totalAssets": 10.7883,
+        "currentShares": 33053745,
+        "change": -586300,
+        "change_p": -1.7429
+      },
+      "18": {
+        "name": "Schwab® S&P 500 Index",
+        "date": "2024-12-31",
+        "totalShares": 0.218,
+        "totalAssets": 7.5465,
+        "currentShares": 32947697,
+        "change": -28502,
+        "change_p": -0.0864
+      },
+      "19": {
+        "name": "Capital Group Growth Fnd of Amer Comp",
+        "date": "2024-09-30",
+        "totalShares": 0.1977,
+        "totalAssets": 2.385,
+        "currentShares": 29887753,
+        "change": 1726645,
+        "change_p": 6.1313
+      }
+    }
+  },
+  "InsiderTransactions": {
+    "0": {
+      "date": "2025-01-02",
+      "ownerCik": null,
+      "ownerName": "James Comer",
+      "transactionDate": "2025-01-02",
+      "transactionCode": "P",
+      "transactionAmount": 0,
+      "transactionPrice": 243.85,
+      "transactionAcquiredDisposed": "A",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "1": {
+      "date": "2024-12-31",
+      "ownerCik": null,
+      "ownerName": "Nancy Pelosi",
+      "transactionDate": "2024-12-31",
+      "transactionCode": "S",
+      "transactionAmount": 0,
+      "transactionPrice": 250.42,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "2": {
+      "date": "2024-12-19",
+      "ownerCik": null,
+      "ownerName": "Josh Gottheimer",
+      "transactionDate": "2024-12-19",
+      "transactionCode": "P",
+      "transactionAmount": 0,
+      "transactionPrice": 249.79,
+      "transactionAcquiredDisposed": "A",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "3": {
+      "date": "2024-12-19",
+      "ownerCik": null,
+      "ownerName": "Sheldon Whitehouse",
+      "transactionDate": "2024-12-19",
+      "transactionCode": "S",
+      "transactionAmount": 0,
+      "transactionPrice": 249.79,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "4": {
+      "date": "2024-12-16",
+      "ownerCik": null,
+      "ownerName": "Jeffrey E Williams",
+      "transactionDate": "2024-12-16",
+      "transactionCode": "S",
+      "transactionAmount": 100000,
+      "transactionPrice": 249.97,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": "http://www.sec.gov/Archives/edgar/data/320193/000032019324000132/xslF345X05/wk-form4_1734564614.xml"
+    },
+    "5": {
+      "date": "2024-11-18",
+      "ownerCik": null,
+      "ownerName": "Chris Kondo",
+      "transactionDate": "2024-11-18",
+      "transactionCode": "S",
+      "transactionAmount": 4130,
+      "transactionPrice": 228.87,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": "http://www.sec.gov/Archives/edgar/data/320193/000032019324000129/xslF345X05/wk-form4_1732059042.xml"
+    },
+    "6": {
+      "date": "2024-11-01",
+      "ownerCik": null,
+      "ownerName": "Marjorie Taylor Greene",
+      "transactionDate": "2024-11-01",
+      "transactionCode": "P",
+      "transactionAmount": 0,
+      "transactionPrice": 222.91,
+      "transactionAcquiredDisposed": "A",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "7": {
+      "date": "2024-10-29",
+      "ownerCik": null,
+      "ownerName": "Tommy Tuberville",
+      "transactionDate": "2024-10-29",
+      "transactionCode": "S",
+      "transactionAmount": 0,
+      "transactionPrice": 233.67,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "8": {
+      "date": "2024-10-07",
+      "ownerCik": null,
+      "ownerName": "Laurel M. Lee",
+      "transactionDate": "2024-10-07",
+      "transactionCode": "P",
+      "transactionAmount": 0,
+      "transactionPrice": 221.69,
+      "transactionAcquiredDisposed": "A",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "9": {
+      "date": "2024-10-07",
+      "ownerCik": null,
+      "ownerName": "Thomas R. Suozzi",
+      "transactionDate": "2024-10-07",
+      "transactionCode": "S",
+      "transactionAmount": 0,
+      "transactionPrice": 221.69,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "10": {
+      "date": "2024-10-04",
+      "ownerCik": null,
+      "ownerName": "Luca Maestri",
+      "transactionDate": "2024-10-04",
+      "transactionCode": "S",
+      "transactionAmount": 59305,
+      "transactionPrice": 226.52,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": "http://www.sec.gov/Archives/edgar/data/320193/000032019324000114/xslF345X05/wk-form4_1728426607.xml"
+    },
+    "11": {
+      "date": "2024-10-02",
+      "ownerCik": null,
+      "ownerName": "Josh Gottheimer",
+      "transactionDate": "2024-10-02",
+      "transactionCode": "P",
+      "transactionAmount": 0,
+      "transactionPrice": 226.78,
+      "transactionAcquiredDisposed": "A",
+      "postTransactionAmount": null,
+      "secLink": null
+    },
+    "12": {
+      "date": "2024-10-02",
+      "ownerCik": null,
+      "ownerName": "Timothy D Cook",
+      "transactionDate": "2024-10-02",
+      "transactionCode": "S",
+      "transactionAmount": 223986,
+      "transactionPrice": 224.46,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": "http://www.sec.gov/Archives/edgar/data/320193/000032019324000109/xslF345X05/wk-form4_1727994624.xml"
+    },
+    "13": {
+      "date": "2024-10-02",
+      "ownerCik": null,
+      "ownerName": "Jeffrey E Williams",
+      "transactionDate": "2024-10-02",
+      "transactionCode": "S",
+      "transactionAmount": 59730,
+      "transactionPrice": 226.86,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": "http://www.sec.gov/Archives/edgar/data/320193/000032019324000112/xslF345X05/wk-form4_1727994654.xml"
+    },
+    "14": {
+      "date": "2024-10-02",
+      "ownerCik": null,
+      "ownerName": "Katherine L Adams",
+      "transactionDate": "2024-10-02",
+      "transactionCode": "S",
+      "transactionAmount": 61019,
+      "transactionPrice": 226.2,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": "http://www.sec.gov/Archives/edgar/data/320193/000032019324000108/xslF345X05/wk-form4_1727994612.xml"
+    },
+    "15": {
+      "date": "2024-09-20",
+      "ownerCik": null,
+      "ownerName": "Shelley Moore Capito",
+      "transactionDate": "2024-09-20",
+      "transactionCode": "S",
+      "transactionAmount": 0,
+      "transactionPrice": 228.2,
+      "transactionAcquiredDisposed": "D",
+      "postTransactionAmount": null,
+      "secLink": null
+.....
