@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { handleCors } from "../../../lib/cors";
-import fundamentalMockArray from "../../../mocks/data/mock_eodhd_fundamentals_200.json";
+import fundamentalMockArray from "../../../mocks/data/mock_eodhd_fundamentals_10000.json";
 import type { FundamentalData } from "shared-types/src/fundamentalTypes";
 
 // ---- [1] 모듈 scope에서 최초 1회만 변환 (캐싱) ----
