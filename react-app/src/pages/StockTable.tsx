@@ -2,6 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import { fetchFundamentalsFor } from "../components/service/fundamentalsFetcher";
 import type { FundamentalData } from "shared-types/src/fundamentalTypes";
 import type { FilterSetTypes } from "shared-types/src/FilterSetTypes";
+import {
+  applyFilters,
+  type FilterSet,
+  type FilterRule,
+} from "@/utils/filterEngine";
 import { fetchDailyClosePriceFor } from "../components/service/dailyPriceFetcher";
 
 import {
@@ -37,19 +42,8 @@ type StockRow = {
   summary: string;
 };
 
-// 필터 문자열 파싱 함수
-function parseRangeFilter(
-  filter: string
-): { min?: number; max?: number } | null {
-  if (!filter || filter === "ALL") return null;
-  if (filter.startsWith("-")) return { max: parseFloat(filter.slice(1)) };
-  if (filter.endsWith("-")) return { min: parseFloat(filter.slice(0, -1)) };
-  if (filter.includes("-")) {
-    const [min, max] = filter.split("-");
-    return { min: parseFloat(min), max: parseFloat(max) };
-  }
-  return null;
-}
+// ⛔️ 기존 문자열 파서는 더 이상 사용하지 않으므로 제거
+// function parseRangeFilter(...) { ... }
 
 const StockTable = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -63,41 +57,12 @@ const StockTable = () => {
   const [dailyCloses, setDailyCloses] = useState<Record<string, number>>({});
   const [showCustomFilter, setShowCustomFilter] = useState(false);
 
-  // 필터의 기본 상태
-  const initialFilterState: FilterSetTypes = {
-    PER: "ALL",
-    EPS: "ALL",
-    PBR: "ALL",
-    dividendYield: "ALL",
-    PEG: "ALL",
-    payoutRatio: "ALL",
-    roe: "ALL",
-    epsGrowth: "ALL",
-    revenueGrowth: "ALL",
-    evEbitda: "ALL",
-    operatingMargin: "ALL",
-    profitMargin: "ALL",
-    evEbit: "ALL",
-    EBITDA: "ALL",
-    WallStreetTargetPrice: "ALL",
-    BookValue: "ALL",
-    DividendShare: "ALL",
-    EPSEstimateCurrentYear: "ALL",
-    EPSEstimateNextYear: "ALL",
-    EPSEstimateNextQuarter: "ALL",
-    EPSEstimateCurrentQuarter: "ALL",
-    ReturnOnAssetsTTM: "ALL",
-    RevenueTTM: "ALL",
-    RevenuePerShareTTM: "ALL",
-    QuarterlyRevenueGrowthYOY: "ALL",
-    GrossProfitTTM: "ALL",
-    QuarterlyEarningsGrowthYOY: "ALL",
-    marketCap: "ALL",
-    volume: "ALL",
-  };
+  // 필터 기본 상태 (빈 객체 = 필터 없음)
+  const initialFilterState: FilterSet = {};
 
+  // 상태: 규칙 객체 기반
   const [fundamentalFilters, setFundamentalFilters] =
-    useState(initialFilterState);
+    useState<FilterSet>(initialFilterState);
 
   // 컬럼 세팅 (표시 컬럼만)
   const enabledMetrics = [
@@ -140,33 +105,19 @@ const StockTable = () => {
         : val
       : "-";
 
-  // 1. 필터 조건에 부합하는 티커만 남김 (모든 필드 대상)
+  // 1) 필터 적용
   const filteredTickers = useMemo(() => {
     return tickers.filter((ticker) => {
       const f = fundamentals[ticker];
       if (!f) return false;
-      // 모든 필터 조건을 통과해야 남김
-      return Object.entries(fundamentalFilters).every(([key, filterValue]) => {
-        if (filterValue === "ALL") return true;
-        // sector 등 문자열 필드는 따로 처리하고 싶으면 추가
-        const raw = f[key as keyof FundamentalData];
-        if (raw == null) return false;
-        // 숫자형 비교
-        const value =
-          typeof raw === "string"
-            ? parseFloat(raw.replace(/,/g, ""))
-            : Number(raw);
-        if (isNaN(value)) return false;
-        const range = parseRangeFilter(filterValue);
-        if (!range) return true;
-        if (range.min !== undefined && value < range.min) return false;
-        if (range.max !== undefined && value >= range.max) return false;
-        return true;
-      });
+      return applyFilters(
+        f as unknown as Record<string, unknown>,
+        fundamentalFilters
+      );
     });
   }, [tickers, fundamentals, fundamentalFilters]);
 
-  // 2. 이 티커들만 표 데이터로 가공 (표시용 필드만)
+  // 2) 표 데이터로 가공
   const allData: StockRow[] = useMemo(() => {
     return filteredTickers.map((ticker) => {
       const f = fundamentals[ticker];
@@ -175,7 +126,7 @@ const StockTable = () => {
       const summaryArr = [
         f?.sector ?? "",
         f?.dividendYield
-          ? `배당 ${getNumberOrDash(f.DividendShare, 2, "%")}`
+          ? `배당 ${getNumberOrDash(f.dividendYield, 2, "%")}`
           : "",
         f?.EPS != null ? `EPS ${getNumberOrDash(f.EPS)}` : "",
         f?.PBR != null ? `PBR ${getNumberOrDash(f.PBR)}` : "",
@@ -250,14 +201,15 @@ const StockTable = () => {
         enabledMetrics={enabledMetrics}
         onChange={() => {}}
       />
+
+      {/* 프리셋: 규칙 객체를 그대로 넘겨서 상태 교체(덮어쓰기) */}
       <PredefinedFilterTabs
-        onApplyFilter={(partialFilters) => {
-          setFundamentalFilters({
-            ...initialFilterState,
-            ...partialFilters,
-          });
+        onApplyFilter={(preset) => {
+          setFundamentalFilters({ ...preset }); // ← 덮어쓰기
+          if (!showCustomFilter) setShowCustomFilter(true); // 드롭다운 패널 자동 오픈(눈으로 확인)
         }}
       />
+
       {showCustomFilter && (
         <div className="mt-2">
           <div className="mb-2 flex justify-between items-center">
@@ -265,17 +217,22 @@ const StockTable = () => {
               필터 조건을 선택하세요
             </span>
           </div>
+
+          {/* 드롭다운: 규칙 객체를 주고받음 */}
           <FundamentalFilter
             filters={fundamentalFilters}
-            onChange={(field, value) => {
-              setFundamentalFilters((prev) => ({
-                ...prev,
-                [field]: value,
-              }));
+            onChange={(field, rule?: FilterRule) => {
+              setFundamentalFilters((prev) => {
+                const next = { ...prev };
+                if (rule === undefined) delete next[field]; // ALL은 키 삭제
+                else next[field] = rule;
+                return next;
+              });
             }}
           />
         </div>
       )}
+
       <div className="mb-4 flex gap-2">
         <button
           onClick={() => setShowCustomFilter((prev) => !prev)}
@@ -283,6 +240,7 @@ const StockTable = () => {
         >
           {showCustomFilter ? "필터링 닫기" : "커스텀 필터링"}
         </button>
+
         {showCustomFilter && (
           <button
             onClick={() => setFundamentalFilters(initialFilterState)}
@@ -292,6 +250,7 @@ const StockTable = () => {
           </button>
         )}
       </div>
+
       <div className="flex justify-between items-center mb-2">
         <h1 className="text-2xl font-bold">실시간 주식 데이터</h1>
         <div className="flex items-center gap-2 text-sm">
@@ -313,6 +272,7 @@ const StockTable = () => {
           </select>
         </div>
       </div>
+
       <Table>
         <TableHeader className="bg-[#2A2A40] sticky top-0 z-10">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -358,6 +318,7 @@ const StockTable = () => {
           ))}
         </TableBody>
       </Table>
+
       <div className="flex justify-end items-center mt-4 gap-4 text-sm">
         <span>
           총 {searchedData.length}개 중 {pageIndex * pageSize + 1}~

@@ -1,12 +1,15 @@
-import type { FilterKey, Filters } from "shared-types/src/filterSetTypes";
+import type { FilterKey } from "shared-types/src/filterSetTypes";
+import type { FilterRule } from "@/utils/filterEngine";
 
 type Props = {
-  filters: Filters;
-  onChange: (field: FilterKey, value: string) => void;
+  // 규칙 객체 기반 (없으면 해당 필터 미적용)
+  filters: Partial<Record<FilterKey, FilterRule | undefined>>;
+  // 변경 핸들러: 규칙 객체 or undefined(ALL)
+  onChange: (field: FilterKey, rule?: FilterRule) => void;
 };
 
-// ① 한글 라벨 변환
-const FILTER_LABELS: Record<string, string> = {
+// ----- 라벨(표시 텍스트) -----
+const LABELS: Record<string, string> = {
   ALL: "전체",
   "-0": "0 미만",
   "0-1": "0~1",
@@ -65,7 +68,8 @@ const FILTER_LABELS: Record<string, string> = {
   "-20000000000": "200억 미만",
 };
 
-const FILTER_OPTIONS: Record<FilterKey, string[]> = {
+// ----- 필드별 옵션(토큰) -----
+const OPTIONS: Record<FilterKey, string[]> = {
   PER: ["ALL", "-10", "10-20", "20-40", "40-"],
   EPS: ["ALL", "-0", "0-1", "1-5", "5-"],
   PBR: ["ALL", "-1", "1-2", "2-5", "5-"],
@@ -122,42 +126,74 @@ const FILTER_OPTIONS: Record<FilterKey, string[]> = {
   sector: [],
 };
 
-// (참고) 계산용 파싱 함수: 필요시 filter logic에서 사용
-export function parseRangeFilter(
-  filter: string
-): { min?: number; max?: number } | null {
-  if (filter === "ALL") return null;
-  // '-10'
-  if (filter.startsWith("-")) return { max: parseFloat(filter.slice(1)) };
-  // '10-'
-  if (filter.endsWith("-")) return { min: parseFloat(filter.slice(0, -1)) };
-  // '10-20'
-  if (filter.includes("-")) {
-    const [min, max] = filter.split("-");
-    return { min: parseFloat(min), max: parseFloat(max) };
+// ----- 토큰 ↔ 규칙 객체 변환 -----
+function tokenToRule(token: string): FilterRule | undefined {
+  if (!token || token === "ALL") return undefined;
+
+  if (/^-\s*-?\d+(\.\d+)?$/.test(token)) {
+    const max = parseFloat(token.slice(1));
+    return { kind: "range", max };
   }
-  return null;
+  if (/^-?\d+(\.\d+)?-\s*$/.test(token)) {
+    const min = parseFloat(token.slice(0, -1));
+    return { kind: "range", min };
+  }
+  if (/^-?\d+(\.\d+)?\s*-\s*-?\d+(\.\d+)?$/.test(token)) {
+    const [minStr, maxStr] = token.split("-").map((s) => s.trim());
+    return { kind: "range", min: parseFloat(minStr), max: parseFloat(maxStr) };
+  }
+  return undefined;
+}
+
+function ruleToToken(rule?: FilterRule): string {
+  if (!rule) return "ALL";
+  switch (rule.kind) {
+    case "num": {
+      const { op, value } = rule;
+      if (op === "<" || op === "<=") return `-${value}`;
+      if (op === ">" || op === ">=") return `${value}-`;
+      return "ALL"; // ==, != 는 현재 토큰 세트에 없음
+    }
+    case "range": {
+      const { min, max } = rule;
+      if (min != null && max != null) return `${min}-${max}`;
+      if (min != null) return `${min}-`;
+      if (max != null) return `-${max}`;
+      return "ALL";
+    }
+    case "enum": {
+      return "ALL"; // 필요시 별도 토큰 설계
+    }
+    default: {
+      const _exhaustive: never = rule;
+      return "ALL";
+    }
+  }
 }
 
 export default function FundamentalFilter({ filters, onChange }: Props) {
   return (
     <div className="flex flex-wrap gap-4 mb-4 text-sm text-white">
-      {Object.entries(FILTER_OPTIONS).map(([field, options]) => (
-        <div key={field} className="flex flex-col">
-          <label className="mb-1 font-semibold uppercase">{field}</label>
-          <select
-            value={filters[field as FilterKey] || "ALL"}
-            onChange={(e) => onChange(field as FilterKey, e.target.value)}
-            className="bg-[#2A2A40] text-white border border-[#444] rounded-md px-2 py-1 text-sm"
-          >
-            {options.map((opt) => (
-              <option key={opt} value={opt}>
-                {FILTER_LABELS[opt] ?? opt}
-              </option>
-            ))}
-          </select>
-        </div>
-      ))}
+      {Object.entries(OPTIONS).map(([field, options]) => {
+        const key = field as FilterKey;
+        const selectedToken = ruleToToken(filters[key]);
+        return (
+          <div key={field} className="flex flex-col">
+            <label className="mb-1 font-semibold uppercase">{field}</label>
+            <select
+              value={selectedToken}
+              onChange={(e) => onChange(key, tokenToRule(e.target.value))}
+              className="bg-[#2A2A40] text-white border border-[#444] rounded-md px-2 py-1 text-sm"
+            >
+              {options.map((opt) => (
+                <option key={opt} value={opt}>
+                  {LABELS[opt] ?? opt}
+                </option>
+              ))}
+            </select>
+          </div>
+        );
+      })}
     </div>
   );
 }
