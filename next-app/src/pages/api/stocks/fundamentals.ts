@@ -5,12 +5,42 @@ import type { FundamentalData } from "shared-types/src/fundamentalTypes";
 
 // ---- [1] 모듈 scope에서 최초 1회만 변환 (캐싱) ----
 const fundamentalMockMap: Record<string, FundamentalData> = {};
-for (const item of fundamentalMockArray) {
-  // evEbit 계산
-  const enterpriseValue = item.Valuation?.EnterpriseValueEbitda;
-  const ebit = item.Highlights?.EBITDA;
+for (const item of fundamentalMockArray as any[]) {
+  // --- Magic Formula용 파생 데이터 계산 (데모용 추정치) ---
+  const revenue = item.Highlights?.RevenueTTM ?? 0;
+  const opMargin = item.Highlights?.OperatingMarginTTM ?? 0;
+  const computedEbit = revenue * opMargin; // EBIT ≈ Revenue * OperatingMargin
+
+  const ebitda = item.Highlights?.EBITDA ?? 0;
+  const evEbitdaRatio = item.Valuation?.EnterpriseValueEbitda ?? 0;
+  // EV ≈ EBITDA * (EV/EBITDA)
+  const computedEV =
+    ebitda && evEbitdaRatio
+      ? ebitda * evEbitdaRatio
+      : item.Highlights?.MarketCapitalization ?? 0;
+
+  // 투하자본 구성요소 (데이터 부재로 시가총액 기반 추정)
+  const marketCapVal = item.Highlights?.MarketCapitalization ?? 0;
+  const computedNWC = marketCapVal * 0.15; // Net Working Capital 추정
+  const computedNFA = marketCapVal * 0.25; // Net Fixed Assets 추정
+
+  const enterpriseValueParam = item.Valuation?.EnterpriseValueEbitda;
   const evEbit =
-    enterpriseValue && ebit && ebit !== 0 ? enterpriseValue / ebit : undefined;
+    enterpriseValueParam && ebitda && ebitda !== 0
+      ? enterpriseValueParam / ebitda
+      : undefined;
+
+  // Magic Formula Metrics (Pre-calculated for Filtering)
+  const earningsYield =
+    computedEbit && computedEV && computedEV !== 0
+      ? computedEbit / computedEV
+      : undefined;
+
+  const investedCapital = computedNWC + computedNFA;
+  const returnOnCapital =
+    computedEbit && investedCapital && investedCapital !== 0
+      ? computedEbit / investedCapital
+      : undefined;
 
   fundamentalMockMap[item.General.Code] = {
     sector: item.General?.Sector ?? "",
@@ -50,6 +80,14 @@ for (const item of fundamentalMockArray) {
     marketCap: String(item.Highlights?.MarketCapitalization ?? "0"),
     volume: String(item.Technicals?.Volume ?? "0"),
     name: String(item.General?.Name ?? undefined),
+
+    // Magic Formula Fields
+    ebit: computedEbit,
+    enterpriseValue: computedEV,
+    netWorkingCapital: computedNWC,
+    netFixedAssets: computedNFA,
+    earningsYield,
+    returnOnCapital,
   };
 }
 

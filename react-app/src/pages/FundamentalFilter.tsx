@@ -54,31 +54,68 @@ const LABELS: Record<string, string> = {
   "-3": "3 미만",
   "-5": "5 미만",
   "-10": "10 미만",
+  "-15": "15 미만",
   "-20": "20 미만",
+  "-25": "25 미만",
+  "-40": "40 미만",
   "-50": "50 미만",
   "-100": "100 미만",
   "-300": "300 미만",
-  "-100000": "10만 미만",
-  "-1000000": "100만 미만",
-  "-10000000": "1,000만 미만",
-  "-100000000": "1억 미만",
-  "-1000000000": "10억 미만",
-  "-5000000000": "50억 미만",
-  "-10000000000": "100억 미만",
-  "-20000000000": "200억 미만",
+  "-0.6": "0.6 미만",
+  "-1.5": "1.5 미만",
+  "3-": "3 이상",
+  "0.1-": "0.1 이상",
+  "0.15-": "0.15 이상",
+  "Technology": "기술 (Technology)",
+  "earningsYield": "이익수익률 (EY)",
+  "returnOnCapital": "자본수익률 (ROC)",
+};
+
+// ----- 필드명 라벨 (한글 매핑) -----
+const FIELD_NAMES: Record<string, string> = {
+  PER: "PER (주가수익비율)",
+  EPS: "EPS (주당순이익)",
+  PBR: "PBR (주가순자산비율)",
+  dividendYield: "배당수익률 (%)",
+  PEG: "PEG (주가이익증가비율)",
+  payoutRatio: "배당성향",
+  roe: "ROE (자기자본이익률)",
+  epsGrowth: "EPS 성장률",
+  revenueGrowth: "매출 성장률",
+  evEbitda: "EV/EBITDA",
+  operatingMargin: "영업이익률",
+  profitMargin: "순이익률",
+  evEbit: "EV/EBIT",
+  EBITDA: "EBITDA",
+  WallStreetTargetPrice: "월가 목표주가",
+  BookValue: "BPS (주당순자산)",
+  DividendShare: "주당 배당금",
+  EPSEstimateCurrentYear: "올해 예상 EPS",
+  EPSEstimateNextYear: "내년 예상 EPS",
+  EPSEstimateNextQuarter: "다음 분기 예상 EPS",
+  EPSEstimateCurrentQuarter: "이번 분기 예상 EPS",
+  ReturnOnAssetsTTM: "ROA (총자산이익률)",
+  RevenueTTM: "매출액 (TTM)",
+  RevenuePerShareTTM: "주당 매출액 (SPS)",
+  QuarterlyRevenueGrowthYOY: "분기 매출 성장률 (YoY)",
+  GrossProfitTTM: "매출총이익 (TTM)",
+  QuarterlyEarningsGrowthYOY: "분기 순이익 성장률 (YoY)",
+  marketCap: "시가총액",
+  volume: "거래량",
+  sector: "섹터",
 };
 
 // ----- 필드별 옵션(토큰) -----
 const OPTIONS: Record<FilterKey, string[]> = {
-  PER: ["ALL", "-10", "10-20", "20-40", "40-"],
+  PER: ["ALL", "-10", "-15", "-20", "-25", "10-20", "20-40", "-40", "40-"],
   EPS: ["ALL", "-0", "0-1", "1-5", "5-"],
-  PBR: ["ALL", "-1", "1-2", "2-5", "5-"],
-  dividendYield: ["ALL", "-1", "1-3", "3-5", "5-"],
-  PEG: ["ALL", "-0.5", "0.5-1", "1-2", "2-"],
-  payoutRatio: ["ALL", "-0.2", "0.2-0.5", "0.5-1", "1-"],
-  roe: ["ALL", "-0", "0-10", "10-20", "20-"],
-  epsGrowth: ["ALL", "-0", "0-0.1", "0.1-0.3", "0.3-"],
-  revenueGrowth: ["ALL", "-0", "0-0.1", "0.1-0.3", "0.3-"],
+  PBR: ["ALL", "-1", "-1.5", "1-2", "2-5", "5-"],
+  dividendYield: ["ALL", "-1", "1-", "1-3", "3-", "3-5", "5-"],
+  PEG: ["ALL", "-0.5", "-1", "0.5-1", "1-2", "2-"],
+  payoutRatio: ["ALL", "-0.2", "0.2-0.5", "-0.6", "0.5-1", "-1", "1-"],
+  roe: ["ALL", "-0", "0-10", "10-20", "15-", "20-"],
+  epsGrowth: ["ALL", "-0", "0-0.1", "0.1-0.3", "0.15-", "0.3-"],
+  revenueGrowth: ["ALL", "-0", "0-0.1", "0.1-", "0.1-0.3", "0.3-"],
   evEbitda: ["ALL", "-5", "5-10", "10-20", "20-"],
   operatingMargin: ["ALL", "-0", "0-10", "10-20", "20-"],
   profitMargin: ["ALL", "-0", "0-10", "10-20", "20-"],
@@ -123,7 +160,9 @@ const OPTIONS: Record<FilterKey, string[]> = {
     "20000000000-",
   ],
   volume: ["ALL", "-100000", "100000-1000000", "1000000-10000000", "10000000-"],
-  sector: [],
+  sector: ["ALL", "Technology"],
+  earningsYield: ["ALL", "0.05-", "0.1-", "0.15-", "0.2-"],
+  returnOnCapital: ["ALL", "0.1-", "0.2-", "0.3-", "0.5-", "1-"],
 };
 
 // ----- 토큰 ↔ 규칙 객체 변환 -----
@@ -162,10 +201,9 @@ function ruleToToken(rule?: FilterRule): string {
       return "ALL";
     }
     case "enum": {
-      return "ALL"; // 필요시 별도 토큰 설계
+      return rule.equals ?? "ALL";
     }
     default: {
-      const _exhaustive: never = rule;
       return "ALL";
     }
   }
@@ -178,12 +216,17 @@ export default function FundamentalFilter({ filters, onChange }: Props) {
         const key = field as FilterKey;
         const selectedToken = ruleToToken(filters[key]);
         return (
-          <div key={field} className="flex flex-col">
-            <label className="mb-1 font-semibold uppercase">{field}</label>
+          <div key={field} className="flex flex-col w-56">
+            <label
+              className="mb-1 font-semibold text-xs text-gray-300 truncate"
+              title={FIELD_NAMES[field] ?? field}
+            >
+              {FIELD_NAMES[field] ?? field}
+            </label>
             <select
               value={selectedToken}
               onChange={(e) => onChange(key, tokenToRule(e.target.value))}
-              className="bg-[#2A2A40] text-white border border-[#444] rounded-md px-2 py-1 text-sm"
+              className="bg-[#2A2A40] text-white border border-[#444] rounded-md px-2 py-1 text-sm w-full"
             >
               {options.map((opt) => (
                 <option key={opt} value={opt}>

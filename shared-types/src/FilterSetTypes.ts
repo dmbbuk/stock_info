@@ -31,6 +31,8 @@ export type FilterSetTypes = {
   marketCap: string;
   volume: string;
   sector?: string; // (선택)
+  earningsYield?: number;
+  returnOnCapital?: number;
 };
 
 // 공용 타입 추출!

@@ -9,3 +9,16 @@ export type FinnhubMessage = {
     type: 'trade';
     data: FinnhubTrade[];
   };
+  
+export type StockRow = {
+    ticker: string;
+    name: string;
+    price: string;
+    marketCap: string;
+    volume: string;
+    PER: string;
+    summary: string;
+    magicRank?: number; // 마법공식 순위
+    earningsYield?: number;
+    returnOnCapital?: number;
+};

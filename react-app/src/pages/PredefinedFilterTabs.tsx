@@ -1,7 +1,9 @@
 // PredefinedFilterTabs.tsx
 import type { FilterSet } from "@/utils/filterEngine";
 
-type Props = { onApplyFilter: (filters: FilterSet) => void };
+type Props = {
+  onApplyFilter: (filters: FilterSet, label: string) => void;
+};
 
 const predefined: { label: string; filters: FilterSet }[] = [
   {
@@ -32,8 +34,8 @@ const predefined: { label: string; filters: FilterSet }[] = [
   {
     label: "🔮 그린블라트 마법공식",
     filters: {
-      PER: { kind: "num", op: "<", value: 20 },
-      roe: { kind: "num", op: ">=", value: 15 },
+      returnOnCapital: { kind: "num", op: ">=", value: 0.5 }, // ROC 50% 이상 (충분히 높은 자본 효율)
+      earningsYield: { kind: "num", op: ">=", value: 0.1 }, // 이익 수익률 10% 이상 (저평가)
     },
   },
   {
@@ -76,7 +78,7 @@ const PredefinedFilterTabs = ({ onApplyFilter }: Props) => {
         <button
           key={label}
           type="button"
-          onClick={() => onApplyFilter({ ...filters })}
+          onClick={() => onApplyFilter({ ...filters }, label)}
           className="bg-[#3B3B50] hover:bg-[#4F4F70] text-white text-sm px-3 py-1 rounded"
           aria-label={`필터 적용: ${label}`}
         >

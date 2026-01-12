@@ -128,4 +128,24 @@ export type FundamentalData = {
   name: string;
   // 32. 회사 이름
   // General.Name
+
+  // --- Magic Formula용 데이터 (EODHD 매핑) ---
+  ebit?: number;
+  // Financials.Income_Statement.EBIT
+
+  enterpriseValue?: number;
+  // Valuation.EnterpriseValue
+
+  netWorkingCapital?: number;
+  // Balance_Sheet.TotalCurrentAssets - TotalCurrentLiabilities
+
+  netFixedAssets?: number;
+  // Balance_Sheet.PropertyPlantAndEquipmentNet
+
+  // --- Magic Formula 계산된 지표 ---
+  earningsYield?: number;
+  // EBIT / EnterpriseValue
+
+  returnOnCapital?: number;
+  // EBIT / (NetWorkingCapital + NetFixedAssets)
 };
