@@ -73,7 +73,7 @@ const predefined: { label: string; filters: FilterSet }[] = [
 
 const PredefinedFilterTabs = ({ onApplyFilter }: Props) => {
   return (
-    <div className="flex flex-wrap gap-2 my-4">
+    <div className="flex flex-wrap gap-2">
       {predefined.map(({ label, filters }) => (
         <button
           key={label}

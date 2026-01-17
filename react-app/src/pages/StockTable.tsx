@@ -13,7 +13,7 @@ import { fetchDailyClosePriceFor } from "../components/service/dailyPriceFetcher
 
 import FundamentalSettings from "./FundamentalSettings";
 import FundamentalFilter from "./FundamentalFilter";
-import SearchBar from "./SearchBar";
+// import SearchBar from "./SearchBar"; // Removed
 import PredefinedFilterTabs from "./PredefinedFilterTabs";
 import StockDataTable from "@/components/StockDataTable";
 import { StockRow } from "@/assets/type/type";
@@ -21,8 +21,12 @@ import { StockRow } from "@/assets/type/type";
 // ⛔️ 기존 문자열 파서는 더 이상 사용하지 않으므로 제거
 // function parseRangeFilter(...) { ... }
 
-const StockTable = () => {
-  const [searchQuery, setSearchQuery] = useState("");
+interface StockTableProps {
+    searchQuery: string;
+}
+
+const StockTable = ({ searchQuery }: StockTableProps) => {
+  // const [searchQuery, setSearchQuery] = useState(""); // Lifted to App
   const [tickers, setTickers] = useState<string[]>([]);
   const [fundamentals, setFundamentals] = useState<
     Record<string, FundamentalData>
@@ -156,42 +160,41 @@ const StockTable = () => {
       
       {/* 1. 상단 컨트롤 바 (패널이 닫혀있을 때만 표시) */}
       {activePanel === 'none' && (
-        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-            <div className="w-full md:w-1/3">
-              <SearchBar searchQuery={searchQuery} onChange={setSearchQuery} />
+        <div className="animate-in fade-in slide-in-from-top-2 duration-300 mb-4">
+          <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-4">
+            
+            {/* 유명인 필터 (왼쪽/상단) */}
+            <div className="flex-1 min-w-0">
+                <PredefinedFilterTabs
+                onApplyFilter={(preset) => {
+                    setFundamentalFilters({ ...preset });
+                }}
+                />
             </div>
             
-            <div className="flex gap-2">
+            {/* 설정 버튼들 (오른쪽/하단) */}
+            <div className="flex gap-2 flex-shrink-0">
               <button
                 onClick={() => setActivePanel('columns')}
-                className="px-4 py-2 bg-[#444466] hover:bg-[#555577] text-gray-200 rounded text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-[#444466] hover:bg-[#555577] text-gray-200 rounded text-sm font-medium transition-colors whitespace-nowrap"
               >
                 ⚙️ 컬럼 설정
               </button>
 
               <button
                 onClick={() => setActivePanel('filters')}
-                className="px-4 py-2 bg-[#444466] hover:bg-[#555577] text-gray-200 rounded text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-[#444466] hover:bg-[#555577] text-gray-200 rounded text-sm font-medium transition-colors whitespace-nowrap"
               >
                 🔍 상세 필터
               </button>
 
               <button
                 onClick={() => setFundamentalFilters(initialFilterState)}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm font-medium transition-colors"
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm font-medium transition-colors whitespace-nowrap"
               >
                 ↺ 초기화
               </button>
             </div>
-          </div>
-
-          <div className="mb-6">
-            <PredefinedFilterTabs
-              onApplyFilter={(preset) => {
-                setFundamentalFilters({ ...preset });
-              }}
-            />
           </div>
         </div>
       )}

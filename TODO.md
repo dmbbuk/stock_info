@@ -55,3 +55,9 @@
       - i18n(다국어) 도입 시, 단순히 텍스트 번역뿐만 아니라 'Color Theme' 설정도 함께 연동.
       - 예: 한국어 설정 시 `theme-korea` (Up: Red, Down: Blue), 영어 설정 시 `theme-us` (Up: Green, Down: Red).
       - CSS 변수(Tailwind config)를 활용해 `text-bull-color`, `text-bear-color` 등으로 추상화하여 구현.
+
+13. [UI] 모바일 반응형 페이지 제작(현재는 PC 중심)
+    - 모바일에서 표 가독성 개선
+    - 모바일용 필터 드로어 UI 최적화
+
+14. (나중에) 빨강/파랑 색상 테마 국제화 옵션 (미국식 녹색/적색 vs 한국식 적색/청색)
