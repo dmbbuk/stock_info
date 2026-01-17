@@ -17,6 +17,9 @@ export type StockRow = {
     marketCap: string;
     volume: string;
     PER: string;
+    EPS?: string;
+    PBR?: string;
+    dividendYield?: string;
     summary: string;
     magicRank?: number; // 마법공식 순위
     earningsYield?: number;

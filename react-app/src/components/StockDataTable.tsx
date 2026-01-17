@@ -1,5 +1,5 @@
 // data만 받아서 표를 그려주는 역할(Presentation)
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -19,21 +19,15 @@ import {
 } from "@/components/ui/table";
 import { StockRow } from "@/assets/type/type";
 
-const columns: ColumnDef<StockRow>[] = [
-  { accessorKey: "ticker", header: "티커" },
-  { accessorKey: "name", header: "회사명" },
-  { accessorKey: "price", header: "가격" },
-  { accessorKey: "marketCap", header: "시가총액" },
-  { accessorKey: "volume", header: "거래량" },
-  { accessorKey: "PER", header: "PER" },
-  { accessorKey: "summary", header: "요약" },
-];
-
 interface StockDataTableProps {
   data: StockRow[];
+  enabledMetrics?: string[];
 }
 
-export default function StockDataTable({ data }: StockDataTableProps) {
+export default function StockDataTable({
+  data,
+  enabledMetrics,
+}: StockDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pageSize, setPageSize] = useState(20);
   const [pageIndex, setPageIndex] = useState(0);
@@ -42,6 +36,27 @@ export default function StockDataTable({ data }: StockDataTableProps) {
   useEffect(() => {
     setPageIndex(0);
   }, [data.length]);
+
+  const columns = useMemo<ColumnDef<StockRow>[]>(() => {
+    const allCols: ColumnDef<StockRow>[] = [
+      { accessorKey: "ticker", header: "티커" },
+      { accessorKey: "name", header: "회사명" },
+      { accessorKey: "price", header: "가격" },
+      { accessorKey: "marketCap", header: "시가총액" },
+      { accessorKey: "volume", header: "거래량" },
+      { accessorKey: "PER", header: "PER" },
+      { accessorKey: "EPS", header: "EPS" },
+      { accessorKey: "PBR", header: "PBR" },
+      { accessorKey: "dividendYield", header: "배당수익률" },
+      { accessorKey: "summary", header: "요약" },
+    ];
+
+    if (!enabledMetrics) return allCols;
+
+    return allCols.filter((col) =>
+      enabledMetrics.includes((col as any).accessorKey)
+    );
+  }, [enabledMetrics]);
 
   const table = useReactTable({
     data,

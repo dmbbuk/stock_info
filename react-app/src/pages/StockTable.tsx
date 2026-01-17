@@ -39,7 +39,7 @@ const StockTable = () => {
     useState<FilterSet>(initialFilterState);
 
   // 컬럼 세팅 (표시 컬럼만)
-  const enabledMetrics = [
+  const [enabledMetrics, setEnabledMetrics] = useState<string[]>([
     "ticker",
     "name",
     "price",
@@ -47,7 +47,7 @@ const StockTable = () => {
     "volume",
     "PER",
     "summary",
-  ];
+  ]);
 
   // 최초 마운트 시 fundamentals 전체 fetch
   useEffect(() => {
@@ -102,10 +102,23 @@ const StockTable = () => {
       const closePrice = dailyCloses[ticker];
       // const magic = magicRanks[ticker];
 
+      const divYieldVal = f?.dividendYield
+        ? (() => {
+            const raw =
+              typeof f.dividendYield === "number"
+                ? f.dividendYield
+                : Number(f.dividendYield);
+            const pct = Number.isFinite(raw)
+              ? Math.floor(raw * 10000) / 100
+              : undefined;
+            return pct;
+          })()
+        : undefined;
+
       const summaryArr = [
         f?.sector ?? "",
-        f?.dividendYield
-          ? `배당 ${getNumberOrDash(f.dividendYield, 2, "%")}`
+        divYieldVal != null
+          ? `배당 ${getNumberOrDash(divYieldVal, 2, "%")}`
           : "",
         f?.EPS != null ? `EPS ${getNumberOrDash(f.EPS)}` : "",
         f?.PBR != null ? `PBR ${getNumberOrDash(f.PBR)}` : "",
@@ -119,6 +132,10 @@ const StockTable = () => {
         marketCap: f?.marketCap ? Number(f.marketCap).toLocaleString() : "-",
         volume: f?.volume ? Number(f.volume).toLocaleString() : "-",
         PER: f?.PER != null ? getNumberOrDash(f.PER) : "-",
+        EPS: f?.EPS != null ? getNumberOrDash(f.EPS) : "-",
+        PBR: f?.PBR != null ? getNumberOrDash(f.PBR) : "-",
+        dividendYield:
+          divYieldVal != null ? getNumberOrDash(divYieldVal, 2, "%") : "-",
         summary,
         // Magic Formula Fields
         // magicRank: magic?.finalRank,
@@ -139,18 +156,18 @@ const StockTable = () => {
   }, [allData, searchQuery]);
 
   return (
-    <div className="p-6 bg-[#1E1E2F] text-white min-h-screen">
+    <div className="w-full">
       <SearchBar searchQuery={searchQuery} onChange={setSearchQuery} />
       <FundamentalSettings
         enabledMetrics={enabledMetrics}
-        onChange={() => {}}
+        onChange={setEnabledMetrics}
       />
 
       {/* 프리셋: 규칙 객체를 그대로 넘겨서 상태 교체(덮어쓰기) */}
       <PredefinedFilterTabs
-        onApplyFilter={(preset, label) => {
+        onApplyFilter={(preset) => {
           setFundamentalFilters({ ...preset }); // ← 덮어쓰기
-          if (!showCustomFilter) setShowCustomFilter(true);
+          setShowCustomFilter(false); // 유명인 필터는 설정을 안 보고 싶어하므로 패널 닫기
         }}
       />
 
@@ -195,7 +212,10 @@ const StockTable = () => {
         )}
       </div>
 
-      <StockDataTable data={searchedData} />
+      <StockDataTable
+        data={searchedData}
+        enabledMetrics={enabledMetrics}
+      />
     </div>
   );
 };
