@@ -1,5 +1,7 @@
 import type { FilterKey } from "shared-types/src/filterSetTypes";
 import type { FilterRule } from "@/utils/filterEngine";
+import { FILTER_TOOLTIPS } from "@/constants/tooltipStrings";
+import { useState } from "react";
 
 type Props = {
   // 규칙 객체 기반 (없으면 해당 필터 미적용)
@@ -69,12 +71,16 @@ const LABELS: Record<string, string> = {
   "Technology": "기술 (Technology)",
   "earningsYield": "이익수익률 (EY)",
   "returnOnCapital": "자본수익률 (ROC)",
+  // Technicals
+  Week52High: "52주 최고가 (근접)", // 현재가가 최고가 대비 어느 정도인지
+  Week52Low: "52주 최저가 (근접)", // 현재가가 최저가 대비 어느 정도인지
+  Day50MA: "50일 이평선 (추세)", // 현재가가 50일선 위/아래
+  Day200MA: "200일 이평선 (장기추세)",
 };
 
 // ----- 필드명 라벨 (한글 매핑) -----
 const FIELD_NAMES: Record<string, string> = {
   PER: "PER (주가수익비율)",
-  EPS: "EPS (주당순이익)",
   PBR: "PBR (주가순자산비율)",
   dividendYield: "배당수익률 (%)",
   PEG: "PEG (주가이익증가비율)",
@@ -85,113 +91,128 @@ const FIELD_NAMES: Record<string, string> = {
   evEbitda: "EV/EBITDA",
   operatingMargin: "영업이익률",
   profitMargin: "순이익률",
-  evEbit: "EV/EBIT",
   EBITDA: "EBITDA",
-  WallStreetTargetPrice: "월가 목표주가",
   BookValue: "BPS (주당순자산)",
-  DividendShare: "주당 배당금",
-  EPSEstimateCurrentYear: "올해 예상 EPS",
-  EPSEstimateNextYear: "내년 예상 EPS",
-  EPSEstimateNextQuarter: "다음 분기 예상 EPS",
-  EPSEstimateCurrentQuarter: "이번 분기 예상 EPS",
   ReturnOnAssetsTTM: "ROA (총자산이익률)",
-  RevenueTTM: "매출액 (TTM)",
-  RevenuePerShareTTM: "주당 매출액 (SPS)",
-  QuarterlyRevenueGrowthYOY: "분기 매출 성장률 (YoY)",
-  GrossProfitTTM: "매출총이익 (TTM)",
-  QuarterlyEarningsGrowthYOY: "분기 순이익 성장률 (YoY)",
-  marketCap: "시가총액",
+  marketCap: "시가총액 (체급)",
   volume: "거래량",
   sector: "섹터",
+  Week52High: "52주 최고가",
+  Week52Low: "52주 최저가",
+  Day200MA: "200일 이평선",
 };
 
 // ----- 필드별 옵션(토큰) -----
+const BASIC_FILTERS: FilterKey[] = [
+  "sector", "marketCap", "PER", "dividendYield", "roe"
+];
+
+const ADVANCED_FILTERS: FilterKey[] = [
+  "revenueGrowth", "operatingMargin", "PBR", "PEG", "evEbitda", 
+];
+
 const OPTIONS: Record<FilterKey, string[]> = {
-  PER: ["ALL", "-10", "-15", "-20", "-25", "10-20", "20-40", "-40", "40-"],
-  EPS: ["ALL", "-0", "0-1", "1-5", "5-"],
-  PBR: ["ALL", "-1", "-1.5", "1-2", "2-5", "5-"],
-  dividendYield: ["ALL", "-1", "1-", "1-3", "3-", "3-5", "5-"],
-  PEG: ["ALL", "-0.5", "-1", "0.5-1", "1-2", "2-"],
-  payoutRatio: ["ALL", "-0.2", "0.2-0.5", "-0.6", "0.5-1", "-1", "1-"],
-  roe: ["ALL", "-0", "0-10", "10-20", "15-", "20-"],
-  epsGrowth: ["ALL", "-0", "0-0.1", "0.1-0.3", "0.15-", "0.3-"],
-  revenueGrowth: ["ALL", "-0", "0-0.1", "0.1-", "0.1-0.3", "0.3-"],
-  evEbitda: ["ALL", "-5", "5-10", "10-20", "20-"],
-  operatingMargin: ["ALL", "-0", "0-10", "10-20", "20-"],
-  profitMargin: ["ALL", "-0", "0-10", "10-20", "20-"],
-  evEbit: ["ALL", "-5", "5-10", "10-20", "20-"],
-  EBITDA: [
-    "ALL",
-    "-100000000",
-    "100000000-500000000",
-    "500000000-1000000000",
-    "1000000000-",
-  ],
-  WallStreetTargetPrice: ["ALL", "-50", "50-100", "100-300", "300-"],
-  BookValue: ["ALL", "-5", "5-10", "10-20", "20-"],
-  DividendShare: ["ALL", "-1", "1-2", "2-5", "5-"],
-  EPSEstimateCurrentYear: ["ALL", "-0", "0-1", "1-5", "5-"],
-  EPSEstimateNextYear: ["ALL", "-0", "0-1", "1-5", "5-"],
-  EPSEstimateNextQuarter: ["ALL", "-0", "0-1", "1-3", "3-"],
-  EPSEstimateCurrentQuarter: ["ALL", "-0", "0-1", "1-3", "3-"],
-  ReturnOnAssetsTTM: ["ALL", "-0", "0-0.05", "0.05-0.1", "0.1-"],
-  RevenueTTM: [
-    "ALL",
-    "-100000000",
-    "100000000-1000000000",
-    "1000000000-10000000000",
-    "10000000000-",
-  ],
-  RevenuePerShareTTM: ["ALL", "-5", "5-10", "10-20", "20-"],
-  QuarterlyRevenueGrowthYOY: ["ALL", "-0", "0-0.1", "0.1-0.3", "0.3-"],
-  GrossProfitTTM: [
-    "ALL",
-    "-100000000",
-    "100000000-1000000000",
-    "1000000000-10000000000",
-    "10000000000-",
-  ],
-  QuarterlyEarningsGrowthYOY: ["ALL", "-0", "0-0.1", "0.1-0.3", "0.3-"],
+  // --- 1. Basic Filters ---
+  sector: ["ALL", "Technology"], // TODO: 전체 섹터 리스트 필요
   marketCap: [
     "ALL",
-    "-1000000000",
-    "1000000000-5000000000",
-    "5000000000-20000000000",
-    "20000000000-",
+    "mega",  // 200B+
+    "large", // 10B - 200B
+    "mid",   // 2B - 10B
+    "small", // 300M - 2B
+    "micro", // < 300M
   ],
-  volume: ["ALL", "-100000", "100000-1000000", "1000000-10000000", "10000000-"],
-  sector: ["ALL", "Technology"],
-  earningsYield: ["ALL", "0.05-", "0.1-", "0.15-", "0.2-"],
-  returnOnCapital: ["ALL", "0.1-", "0.2-", "0.3-", "0.5-", "1-"],
+  PER: ["ALL", "-10", "-15", "-20", "-25", "10-20", "20-40", "-40", "40-"],
+  dividendYield: ["ALL", "1-", "3-", "5-"], 
+  roe: ["ALL", "10-", "15-", "20-"], 
+
+  // --- 2. Advanced Filters ---
+  revenueGrowth: ["ALL", "0.1-", "0.2-", "0.3-"],
+  operatingMargin: ["ALL", "10-", "20-", "30-"],
+  PBR: ["ALL", "-1", "1-3", "3-"],
+  PEG: ["ALL", "-1", "1-", "1-1.5"],
+  evEbitda: ["ALL", "-10", "10-20", "20-"],
+  
+  // 아래는 사용 안 함 (설정만 유지) - 화면에 렌더링 안 됨
+  EPS: ["ALL"],
+  payoutRatio: ["ALL"],
+  epsGrowth: ["ALL"],
+  profitMargin: ["ALL"],
+  evEbit: ["ALL"],
+  EBITDA: ["ALL"],
+  WallStreetTargetPrice: ["ALL"],
+  BookValue: ["ALL"],
+  DividendShare: ["ALL"],
+  EPSEstimateCurrentYear: ["ALL"],
+  EPSEstimateNextYear: ["ALL"],
+  EPSEstimateNextQuarter: ["ALL"],
+  EPSEstimateCurrentQuarter: ["ALL"],
+  ReturnOnAssetsTTM: ["ALL"],
+  RevenueTTM: ["ALL"],
+  RevenuePerShareTTM: ["ALL"],
+  QuarterlyRevenueGrowthYOY: ["ALL"],
+  GrossProfitTTM: ["ALL"],
+  QuarterlyEarningsGrowthYOY: ["ALL"],
+  volume: ["ALL", "100000-", "1000000-"], 
+  earningsYield: ["ALL"],
+  returnOnCapital: ["ALL"],
 };
 
 // ----- 토큰 ↔ 규칙 객체 변환 -----
 function tokenToRule(token: string): FilterRule | undefined {
   if (!token || token === "ALL") return undefined;
 
-  if (/^-\s*-?\d+(\.\d+)?$/.test(token)) {
+  // Market Cap Presets (1B = 1,000,000,000)
+  if (token === "mega") return { kind: "range", min: 200_000_000_000 };
+  if (token === "large") return { kind: "range", min: 10_000_000_000, max: 200_000_000_000 };
+  if (token === "mid") return { kind: "range", min: 2_000_000_000, max: 10_000_000_000 };
+  if (token === "small") return { kind: "range", min: 300_000_000, max: 2_000_000_000 };
+  if (token === "micro") return { kind: "range", max: 300_000_000 };
+
+  // 1) 숫자 범위(Range) 패턴인지 먼저 확인
+  //    (주의: "Technology" 같은 문자열이 오면 parseFloat가 NaN이 나올 수 있음 등으로
+  //     정규식 체크가 필수)
+
+  const isMaxPattern = /^-\s*-?\d+(\.\d+)?$/;  // "-10"  (= 10미만)
+  const isMinPattern = /^-?\d+(\.\d+)?-\s*$/;  // "10-"  (= 10이상)
+  const isRangePattern = /^-?\d+(\.\d+)?\s*-\s*-?\d+(\.\d+)?$/; // "10-20" (= 10~20)
+
+  if (isMaxPattern.test(token)) {
     const max = parseFloat(token.slice(1));
     return { kind: "range", max };
   }
-  if (/^-?\d+(\.\d+)?-\s*$/.test(token)) {
+  if (isMinPattern.test(token)) {
     const min = parseFloat(token.slice(0, -1));
     return { kind: "range", min };
   }
-  if (/^-?\d+(\.\d+)?\s*-\s*-?\d+(\.\d+)?$/.test(token)) {
+  if (isRangePattern.test(token)) {
     const [minStr, maxStr] = token.split("-").map((s) => s.trim());
     return { kind: "range", min: parseFloat(minStr), max: parseFloat(maxStr) };
   }
-  return undefined;
+  
+  // 2) 위 숫자 패턴에 안 걸리면, 문자열 일치(enum)로 간주
+  //    (예: "Technology", "Healthcare" 등)
+  return { kind: "enum", equals: token };
 }
 
+// Market Cap 역변환 로직 (간단히 매칭)
 function ruleToToken(rule?: FilterRule): string {
   if (!rule) return "ALL";
+  if (rule.kind === "range") {
+      const { min, max } = rule;
+      if (min === 200_000_000_000) return "mega";
+      if (min === 10_000_000_000 && max === 200_000_000_000) return "large";
+      if (min === 2_000_000_000 && max === 10_000_000_000) return "mid";
+      if (min === 300_000_000 && max === 2_000_000_000) return "small";
+      if (max === 300_000_000) return "micro";
+  }
+
   switch (rule.kind) {
     case "num": {
       const { op, value } = rule;
       if (op === "<" || op === "<=") return `-${value}`;
       if (op === ">" || op === ">=") return `${value}-`;
-      return "ALL"; // ==, != 는 현재 토큰 세트에 없음
+      return "ALL"; 
     }
     case "range": {
       const { min, max } = rule;
@@ -210,33 +231,89 @@ function ruleToToken(rule?: FilterRule): string {
 }
 
 export default function FundamentalFilter({ filters, onChange }: Props) {
+    
+  // 모바일/클릭 환경 대응을 위한 툴팁 상태 관리
+  const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
+
+  // 그룹별 렌더링 함수
+  const renderFilters = (keys: FilterKey[]) => (
+      <div className="flex flex-wrap gap-4">
+        {keys.map((field) => {
+            const options = OPTIONS[field];
+            const selectedToken = ruleToToken(filters[field]);
+            const hasTooltip = !!FILTER_TOOLTIPS[field];
+
+            return (
+            <div key={field} className="flex flex-col w-40 relative">
+                <div className="flex items-center mb-1 gap-1">
+                  <label
+                    className="font-semibold text-xs text-gray-400 truncate cursor-default"
+                  >
+                    {FIELD_NAMES[field] ?? field}
+                  </label>
+                  {/* 물음표 아이콘 (툴팁이 있는 경우만) */}
+                  {hasTooltip && (
+                    <button
+                      type="button"
+                      className="text-[10px] w-4 h-4 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-400 transition-colors"
+                      onClick={() => setActiveTooltip(activeTooltip === field ? null : field)}
+                    >
+                      ?
+                    </button>
+                  )}
+                </div>
+
+                {/* 툴팁 팝업 Layer (absolute) */}
+                {activeTooltip === field && (
+                  <>
+                    {/* 외부 클릭 시 닫기 위한 투명 오버레이 */}
+                    <div 
+                      className="fixed inset-0 z-10" 
+                      onClick={() => setActiveTooltip(null)} 
+                    />
+                    <div className="absolute z-20 bottom-full left-0 mb-2 w-64 p-3 bg-gray-900 border border-gray-600 text-xs text-gray-200 rounded shadow-xl whitespace-pre-wrap leading-relaxed">
+                      {FILTER_TOOLTIPS[field]}
+                      <div className="absolute top-full left-4 -mt-[1px] border-8 border-transparent border-t-gray-600" />
+                    </div>
+                  </>
+                )}
+
+                <select
+                value={selectedToken}
+                onChange={(e) => onChange(field, tokenToRule(e.target.value))}
+                className="bg-[#1E1E2E] text-gray-200 border border-gray-600 rounded-md px-3 py-1.5 text-sm w-full hover:border-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
+                >
+                {options.map((opt) => (
+                    <option key={opt} value={opt}>
+                    {LABELS[opt] ?? opt}
+                    </option>
+                ))}
+                </select>
+            </div>
+            );
+        })}
+      </div>
+  );
+
   return (
-    <div className="flex flex-wrap gap-4 mb-4 text-sm text-white">
-      {Object.entries(OPTIONS).map(([field, options]) => {
-        const key = field as FilterKey;
-        const selectedToken = ruleToToken(filters[key]);
-        return (
-          <div key={field} className="flex flex-col w-56">
-            <label
-              className="mb-1 font-semibold text-xs text-gray-300 truncate"
-              title={FIELD_NAMES[field] ?? field}
-            >
-              {FIELD_NAMES[field] ?? field}
-            </label>
-            <select
-              value={selectedToken}
-              onChange={(e) => onChange(key, tokenToRule(e.target.value))}
-              className="bg-[#2A2A40] text-white border border-[#444] rounded-md px-2 py-1 text-sm w-full"
-            >
-              {options.map((opt) => (
-                <option key={opt} value={opt}>
-                  {LABELS[opt] ?? opt}
-                </option>
-              ))}
-            </select>
-          </div>
-        );
-      })}
+    <div className="mb-6 p-4 bg-[#181825] rounded-lg border border-gray-700 shadow-sm flex flex-col gap-6">
+      {/* 1. 기본 필터 섹션 */}
+      <div className="border-b border-gray-700 pb-4">
+          <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
+              <span className="w-1 h-4 bg-blue-500 rounded-sm"></span>
+              기본 필터 (Essential)
+          </h4>
+          {renderFilters(BASIC_FILTERS)}
+      </div>
+
+      {/* 2. 고급 필터 섹션 */}
+      <div>
+          <h4 className="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
+              <span className="w-1 h-4 bg-gray-500 rounded-sm"></span>
+              상세 분석 (Advanced)
+          </h4>
+          {renderFilters(ADVANCED_FILTERS)}
+      </div>
     </div>
   );
 }

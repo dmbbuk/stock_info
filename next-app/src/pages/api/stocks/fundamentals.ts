@@ -78,9 +78,11 @@ for (const item of fundamentalMockArray as any[]) {
     QuarterlyEarningsGrowthYOY:
       item.Highlights?.QuarterlyEarningsGrowthYOY ?? undefined,
     marketCap: String(item.Highlights?.MarketCapitalization ?? "0"),
-    volume: String(item.Technicals?.Volume ?? "0"),
-    name: String(item.General?.Name ?? undefined),
-
+    // Technicals
+    Week52High: item.Technicals?.['52WeekHigh'] ?? undefined,
+    Week52Low: item.Technicals?.['52WeekLow'] ?? undefined,
+    Day50MA: item.Technicals?.['50DayMA'] ?? undefined,
+    Day200MA: item.Technicals?.['200DayMA'] ?? undefined,
     // Magic Formula Fields
     ebit: computedEbit,
     enterpriseValue: computedEV,

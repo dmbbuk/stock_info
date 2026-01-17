@@ -48,7 +48,12 @@ export const FIELD_META: Record<string, FieldMeta> = {
 
   // 필요시 추가
   sector: { type: "enum" },
-  // name, ticker 등은 보통 필터 안함
+
+  // Technicals
+  Week52High: { type: "number" },
+  Week52Low: { type: "number" },
+  Day50MA: { type: "number" },
+  Day200MA: { type: "number" },
 };
 
 function toNumber(raw: unknown, meta?: FieldMeta): number {

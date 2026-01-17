@@ -13,15 +13,21 @@ export type FinnhubMessage = {
 export type StockRow = {
     ticker: string;
     name: string;
-    price: string;
-    marketCap: string;
-    volume: string;
-    PER: string;
-    EPS?: string;
-    PBR?: string;
-    dividendYield?: string;
+    price: number | string;   // 숫자로 관리하는 게 좋음
+    marketCap: number | string;
+    volume: number | string;
+    PER: number | string;
+    EPS?: number | string;
+    PBR?: number | string;
+    dividendYield?: number | string;
     summary: string;
-    magicRank?: number; // 마법공식 순위
+    magicRank?: number; 
     earningsYield?: number;
     returnOnCapital?: number;
+
+    // Technicals
+    Week52High?: number;
+    Week52Low?: number;
+    Day50MA?: number;
+    Day200MA?: number;
 };

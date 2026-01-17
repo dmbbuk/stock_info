@@ -148,4 +148,14 @@ export type FundamentalData = {
 
   returnOnCapital?: number;
   // EBIT / (NetWorkingCapital + NetFixedAssets)
+
+  // --- Technicals (Finviz Style 벤치마킹) ---
+  Week52High?: number;
+  // Technicals.52WeekHigh
+  Week52Low?: number;
+  // Technicals.52WeekLow
+  Day50MA?: number;
+  // Technicals.50DayMA
+  Day200MA?: number;
+  // Technicals.200DayMA
 };

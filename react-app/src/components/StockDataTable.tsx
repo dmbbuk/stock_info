@@ -1,7 +1,6 @@
 // data만 받아서 표를 그려주는 역할(Presentation)
 import { useState, useEffect, useMemo } from "react";
 import {
-  ColumnDef,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -18,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { StockRow } from "@/assets/type/type";
+import { stockTableColumns } from "./StockTableColumns";
 
 interface StockDataTableProps {
   data: StockRow[];
@@ -29,7 +29,7 @@ export default function StockDataTable({
   enabledMetrics,
 }: StockDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [pageIndex, setPageIndex] = useState(0);
 
   // 데이터 목록이 바뀌면(검색 등) 페이지 인덱스 초기화
@@ -37,36 +37,33 @@ export default function StockDataTable({
     setPageIndex(0);
   }, [data.length]);
 
-  const columns = useMemo<ColumnDef<StockRow>[]>(() => {
-    const allCols: ColumnDef<StockRow>[] = [
-      { accessorKey: "ticker", header: "티커" },
-      { accessorKey: "name", header: "회사명" },
-      { accessorKey: "price", header: "가격" },
-      { accessorKey: "marketCap", header: "시가총액" },
-      { accessorKey: "volume", header: "거래량" },
-      { accessorKey: "PER", header: "PER" },
-      { accessorKey: "EPS", header: "EPS" },
-      { accessorKey: "PBR", header: "PBR" },
-      { accessorKey: "dividendYield", header: "배당수익률" },
-      { accessorKey: "summary", header: "요약" },
-    ];
-
-    if (!enabledMetrics) return allCols;
-
-    return allCols.filter((col) =>
-      enabledMetrics.includes((col as any).accessorKey)
-    );
-  }, [enabledMetrics]);
-
   const table = useReactTable({
     data,
-    columns,
+    columns: stockTableColumns, // 전체 컬럼을 다 집어넣고
     state: {
       sorting,
       pagination: {
         pageSize,
         pageIndex,
       },
+      // React-Table 의 Visibility 기능을 이용해 숨김 처리
+      columnVisibility: useMemo(() => {
+        if (!enabledMetrics) return {}; // 모두 보임
+        
+        const visibility: Record<string, boolean> = {};
+        // 1. 일단 모두 숨김 처리
+        stockTableColumns.forEach((col) => {
+          const key = (col as any).accessorKey;
+          visibility[key] = false;
+        });
+        
+        // 2. 활성화된 것만 true
+        enabledMetrics.forEach((metric) => {
+          visibility[metric] = true;
+        });
+
+        return visibility;
+      }, [enabledMetrics]),
     },
     onSortingChange: setSorting,
     onPaginationChange: (updater) => {
@@ -87,10 +84,9 @@ export default function StockDataTable({
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-2">
-        <h1 className="text-2xl font-bold">실시간 주식 데이터</h1>
+      <div className="flex justify-end items-center mb-2">
         <div className="flex items-center gap-2 text-sm">
-          <label>페이지당 보기:</label>
+          <label className="text-gray-400">페이지당 보기:</label>
           <select
             value={pageSize}
             onChange={(e) => {
@@ -98,7 +94,7 @@ export default function StockDataTable({
               setPageSize(newSize);
               setPageIndex(0);
             }}
-            className="text-black rounded px-2 py-1"
+            className="bg-[#2A2A40] text-white border border-gray-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
           >
             {[10, 20, 50, 100].map((size) => (
               <option key={size} value={size}>
@@ -139,13 +135,7 @@ export default function StockDataTable({
               {row.getVisibleCells().map((cell) => (
                 <TableCell
                   key={cell.id}
-                  className={`px-4 py-1 ${
-                    !isNaN(
-                      Number(String(cell.getValue()).replace(/[%,$,]/g, ""))
-                    )
-                      ? "text-right"
-                      : "text-left"
-                  }`}
+                  className="px-4 py-1 text-left"
                 >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </TableCell>

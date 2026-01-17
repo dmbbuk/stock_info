@@ -28,8 +28,9 @@ const StockTable = () => {
     Record<string, FundamentalData>
   >({});
   const [dailyCloses, setDailyCloses] = useState<Record<string, number>>({});
-  const [showCustomFilter, setShowCustomFilter] = useState(false);
-  // const [activePreset, setActivePreset] = useState<string | null>(null);
+
+  // 패널 상태 ('none' | 'columns' | 'filters')
+  const [activePanel, setActivePanel] = useState<'none' | 'columns' | 'filters'>('none');
 
   // 필터 기본 상태 (빈 객체 = 필터 없음)
   const initialFilterState: FilterSet = {};
@@ -42,11 +43,15 @@ const StockTable = () => {
   const [enabledMetrics, setEnabledMetrics] = useState<string[]>([
     "ticker",
     "name",
+    "sector",
     "price",
     "marketCap",
-    "volume",
     "PER",
-    "summary",
+    "roe",
+    "dividendYield",
+    "Week52High",
+    "Week52Low",
+    "Day200MA", 
   ]);
 
   // 최초 마운트 시 fundamentals 전체 fetch
@@ -69,13 +74,8 @@ const StockTable = () => {
     loadDailyCloses();
   }, [tickers]);
 
-  // 숫자/문자 변환 유틸
-  const getNumberOrDash = (val?: number | string, digits = 2, suffix = "") =>
-    val != null && val !== ""
-      ? typeof val === "number"
-        ? val.toFixed(digits) + suffix
-        : val
-      : "-";
+  // 숫자/문자 변환 유틸 (제거됨 - View Layer 로 이동)
+  // const getNumberOrDash = ...
 
   // 마법공식 랭킹 계산 (전체 데이터 대상)
   // const magicRanks = useMemo(
@@ -100,47 +100,43 @@ const StockTable = () => {
     return filteredTickers.map((ticker) => {
       const f = fundamentals[ticker];
       const closePrice = dailyCloses[ticker];
-      // const magic = magicRanks[ticker];
-
+      
+      // Data Processing Layer: 값 계산만 하고, 포맷팅은 View Layer에게 맡김
       const divYieldVal = f?.dividendYield
         ? (() => {
-            const raw =
-              typeof f.dividendYield === "number"
-                ? f.dividendYield
-                : Number(f.dividendYield);
-            const pct = Number.isFinite(raw)
-              ? Math.floor(raw * 10000) / 100
-              : undefined;
-            return pct;
+            const raw = typeof f.dividendYield === "number" ? f.dividendYield : Number(f.dividendYield);
+            return Number.isFinite(raw) ? Math.floor(raw * 10000) / 100 : undefined;
           })()
         : undefined;
 
+      // 요약 필드는 여러 정보가 합쳐지므로 여기서 문자열 조합
       const summaryArr = [
         f?.sector ?? "",
         divYieldVal != null
-          ? `배당 ${getNumberOrDash(divYieldVal, 2, "%")}`
+          ? `배당 ${divYieldVal.toFixed(2)}%`
           : "",
-        f?.EPS != null ? `EPS ${getNumberOrDash(f.EPS)}` : "",
-        f?.PBR != null ? `PBR ${getNumberOrDash(f.PBR)}` : "",
+        f?.EPS != null ? `EPS ${f.EPS.toFixed(2)}` : "",
+        f?.PBR != null ? `PBR ${f.PBR.toFixed(2)}` : "",
       ];
       const summary = summaryArr.filter(Boolean).join(" / ");
 
+      // Raw Data 전달
       return {
         ticker,
         name: f?.name ?? "-",
-        price: closePrice != null ? closePrice.toFixed(2) : "-",
-        marketCap: f?.marketCap ? Number(f.marketCap).toLocaleString() : "-",
-        volume: f?.volume ? Number(f.volume).toLocaleString() : "-",
-        PER: f?.PER != null ? getNumberOrDash(f.PER) : "-",
-        EPS: f?.EPS != null ? getNumberOrDash(f.EPS) : "-",
-        PBR: f?.PBR != null ? getNumberOrDash(f.PBR) : "-",
-        dividendYield:
-          divYieldVal != null ? getNumberOrDash(divYieldVal, 2, "%") : "-",
+        price: closePrice ?? "-", // 숫자가 없으면 "-"
+        marketCap: f?.marketCap ? Number(f.marketCap) : "-",
+        volume: f?.volume ? Number(f.volume) : "-",
+        PER: f?.PER != null ? f.PER : "-",
+        EPS: f?.EPS != null ? f.EPS : "-",
+        PBR: f?.PBR != null ? f.PBR : "-",
+        dividendYield: divYieldVal ?? "-", // 숫자 혹은 "-"
         summary,
-        // Magic Formula Fields
-        // magicRank: magic?.finalRank,
-        // earningsYield: magic?.earningsYield,
-        // returnOnCapital: magic?.returnOnCapital,
+        // Technicals (finviz style)
+        Week52High: f?.Week52High,
+        Week52Low: f?.Week52Low,
+        Day50MA: f?.Day50MA,
+        Day200MA: f?.Day200MA,
       };
     });
   }, [filteredTickers, dailyCloses, fundamentals]);
@@ -156,66 +152,105 @@ const StockTable = () => {
   }, [allData, searchQuery]);
 
   return (
-    <div className="w-full">
-      <SearchBar searchQuery={searchQuery} onChange={setSearchQuery} />
-      <FundamentalSettings
-        enabledMetrics={enabledMetrics}
-        onChange={setEnabledMetrics}
-      />
+    <div className="w-full relative flex flex-col">
+      
+      {/* 1. 상단 컨트롤 바 (패널이 닫혀있을 때만 표시) */}
+      {activePanel === 'none' && (
+        <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div className="w-full md:w-1/3">
+              <SearchBar searchQuery={searchQuery} onChange={setSearchQuery} />
+            </div>
+            
+            <div className="flex gap-2">
+              <button
+                onClick={() => setActivePanel('columns')}
+                className="px-4 py-2 bg-[#444466] hover:bg-[#555577] text-gray-200 rounded text-sm font-medium transition-colors"
+              >
+                ⚙️ 컬럼 설정
+              </button>
 
-      {/* 프리셋: 규칙 객체를 그대로 넘겨서 상태 교체(덮어쓰기) */}
-      <PredefinedFilterTabs
-        onApplyFilter={(preset) => {
-          setFundamentalFilters({ ...preset }); // ← 덮어쓰기
-          setShowCustomFilter(false); // 유명인 필터는 설정을 안 보고 싶어하므로 패널 닫기
-        }}
-      />
+              <button
+                onClick={() => setActivePanel('filters')}
+                className="px-4 py-2 bg-[#444466] hover:bg-[#555577] text-gray-200 rounded text-sm font-medium transition-colors"
+              >
+                🔍 상세 필터
+              </button>
 
-      {showCustomFilter && (
-        <div className="mt-2 text-white">
-          <div className="mb-2 flex justify-between items-center">
-            <span className="text-sm text-gray-300">
-              필터 조건을 선택하세요
-            </span>
+              <button
+                onClick={() => setFundamentalFilters(initialFilterState)}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm font-medium transition-colors"
+              >
+                ↺ 초기화
+              </button>
+            </div>
           </div>
 
-          {/* 드롭다운: 규칙 객체를 주고받음 */}
-          <FundamentalFilter
-            filters={fundamentalFilters}
-            onChange={(field, rule?: FilterRule) => {
-              setFundamentalFilters((prev) => {
-                const next = { ...prev };
-                if (rule === undefined) delete next[field]; // ALL은 키 삭제
-                else next[field] = rule;
-                return next;
-              });
-            }}
-          />
+          <div className="mb-6">
+            <PredefinedFilterTabs
+              onApplyFilter={(preset) => {
+                setFundamentalFilters({ ...preset });
+              }}
+            />
+          </div>
         </div>
       )}
 
-      <div className="mb-4 flex gap-2">
-        <button
-          onClick={() => setShowCustomFilter((prev) => !prev)}
-          className="bg-[#444466] text-white text-sm px-3 py-1 rounded"
-        >
-          {showCustomFilter ? "필터링 닫기" : "커스텀 필터링"}
-        </button>
+      {/* 2. 설정 패널 (활성화 시 상단 영역 대체 및 확장) */}
+      {activePanel !== 'none' && (
+        <div className="mb-6 bg-[#232336] border border-gray-600 rounded-lg shadow-2xl animate-in slide-in-from-top-4 duration-300">
+            {/* Header */}
+            <div className="flex justify-between items-center px-6 py-4 border-b border-gray-600 bg-[#2c2c44] rounded-t-lg">
+                 <div className="flex items-center gap-3">
+                    <h2 className="text-xl font-bold text-white">
+                        {activePanel === 'columns' ? '⚙️ 컬럼 표시 설정' : '🔍 상세 필터 조건 설정'}
+                    </h2>
+                    <span className="text-sm text-gray-400">
+                        (설정 후 닫기를 누르세요)
+                    </span>
+                 </div>
+                 <button 
+                    onClick={() => setActivePanel('none')}
+                    className="flex items-center gap-2 px-4 py-1.5 rounded bg-blue-600 hover:bg-blue-500 text-white font-medium transition-colors shadow-lg"
+                 >
+                    <span>설정 완료 (닫기)</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
+                 </button>
+            </div>
 
-        {showCustomFilter && (
-          <button
-            onClick={() => setFundamentalFilters(initialFilterState)}
-            className="bg-gray-600 text-white text-sm px-3 py-1 rounded hover:bg-gray-500"
-          >
-            필터링 초기화
-          </button>
-        )}
+            {/* Content */}
+            <div className="p-6 max-h-[60vh] overflow-y-auto">
+                 {activePanel === 'columns' && (
+                    <FundamentalSettings
+                        enabledMetrics={enabledMetrics}
+                        onChange={setEnabledMetrics}
+                    />
+                 )}
+                 {activePanel === 'filters' && (
+                    <FundamentalFilter
+                        filters={fundamentalFilters}
+                        onChange={(field, rule?: FilterRule) => {
+                        setFundamentalFilters((prev) => {
+                            const next = { ...prev };
+                            if (rule === undefined) delete next[field];
+                            else next[field] = rule;
+                            return next;
+                        });
+                        }}
+                    />
+                 )}
+            </div>
+        </div>
+      )}
+
+      {/* 3. 데이터 테이블 (항상 존재, 패널에 의해 아래로 밀림) */}
+      <div className="flex-1 relative z-0 transition-all duration-300 ease-in-out">
+        <StockDataTable
+            data={searchedData}
+            enabledMetrics={enabledMetrics}
+        />
       </div>
 
-      <StockDataTable
-        data={searchedData}
-        enabledMetrics={enabledMetrics}
-      />
     </div>
   );
 };
