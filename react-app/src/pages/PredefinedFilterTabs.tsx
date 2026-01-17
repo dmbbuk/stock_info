@@ -3,6 +3,7 @@ import type { FilterSet } from "@/utils/filterEngine";
 
 type Props = {
   onApplyFilter: (filters: FilterSet, label: string) => void;
+  activePreset: string | null;
 };
 
 const predefined: { label: string; filters: FilterSet }[] = [
@@ -71,20 +72,28 @@ const predefined: { label: string; filters: FilterSet }[] = [
   { label: "🔥 급등주", filters: {} },
 ];
 
-const PredefinedFilterTabs = ({ onApplyFilter }: Props) => {
+const PredefinedFilterTabs = ({ onApplyFilter, activePreset }: Props) => {
   return (
     <div className="flex flex-wrap gap-2">
-      {predefined.map(({ label, filters }) => (
-        <button
-          key={label}
-          type="button"
-          onClick={() => onApplyFilter({ ...filters }, label)}
-          className="bg-[#3B3B50] hover:bg-[#4F4F70] text-white text-sm px-3 py-1 rounded"
-          aria-label={`필터 적용: ${label}`}
-        >
-          {label}
-        </button>
-      ))}
+      {predefined.map(({ label, filters }) => {
+        const isActive = activePreset === label;
+        return (
+          <button
+            key={label}
+            type="button"
+            onClick={() => onApplyFilter({ ...filters }, label)}
+            className={`text-sm px-3 py-1 rounded transition-colors ${
+              isActive
+                ? "bg-blue-600 text-white font-medium hover:bg-blue-500"
+                : "bg-[#3B3B50] text-[#e0e0e0] hover:bg-[#4F4F70]"
+            }`}
+            aria-label={`필터 적용: ${label}`}
+            aria-pressed={isActive}
+          >
+            {label}
+          </button>
+        );
+      })}
     </div>
   );
 };

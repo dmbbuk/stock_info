@@ -11,9 +11,9 @@ export const Header = ({ searchQuery, setSearchQuery }: HeaderProps) => {
     <header className="mb-6">
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
         {/* Title & Search Section */}
-        <div className="flex-1 min-w-0 pr-4">
-          <div className="flex-shrink-0 pt-2 mb-4">
-            <h1 className="text-3xl font-bold text-white tracking-tight">
+        <div className="flex-1 min-w-0 pr-4 flex flex-col md:h-[90px] md:justify-between gap-4 md:gap-0">
+          <div className="flex-shrink-0">
+            <h1 className="text-2xl font-bold text-white tracking-tight leading-none bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
               실시간 주식 데이터
             </h1>
           </div>

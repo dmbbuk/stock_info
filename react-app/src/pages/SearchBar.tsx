@@ -7,7 +7,7 @@ type Props = {
 
 export default function SearchBar({ searchQuery, onChange }: Props) {
   return (
-    <div className="mb-4">
+    <div className="">
       <input
         type="text"
         value={searchQuery}

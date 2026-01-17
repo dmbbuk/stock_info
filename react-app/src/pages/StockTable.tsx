@@ -43,6 +43,9 @@ const StockTable = ({ searchQuery }: StockTableProps) => {
   const [fundamentalFilters, setFundamentalFilters] =
     useState<FilterSet>(initialFilterState);
 
+  // 현재 활성화된 프리셋 라벨 (없으면 null)
+  const [activePreset, setActivePreset] = useState<string | null>(null);
+
   // 컬럼 세팅 (표시 컬럼만)
   const [enabledMetrics, setEnabledMetrics] = useState<string[]>([
     "ticker",
@@ -166,9 +169,18 @@ const StockTable = ({ searchQuery }: StockTableProps) => {
             {/* 유명인 필터 (왼쪽/상단) */}
             <div className="flex-1 min-w-0">
                 <PredefinedFilterTabs
-                onApplyFilter={(preset) => {
-                    setFundamentalFilters({ ...preset });
-                }}
+                  activePreset={activePreset}
+                  onApplyFilter={(presetFilters, label) => {
+                    if (activePreset === label) {
+                      // 이미 선택된 필터를 다시 누르면 해제(초기화)
+                      setFundamentalFilters(initialFilterState);
+                      setActivePreset(null);
+                    } else {
+                      // 새로운 필터 적용
+                      setFundamentalFilters({ ...presetFilters });
+                      setActivePreset(label);
+                    }
+                  }}
                 />
             </div>
             
@@ -189,8 +201,11 @@ const StockTable = ({ searchQuery }: StockTableProps) => {
               </button>
 
               <button
-                onClick={() => setFundamentalFilters(initialFilterState)}
-                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm font-medium transition-colors whitespace-nowrap"
+                onClick={() => {
+                   setFundamentalFilters(initialFilterState);
+                   setActivePreset(null);
+                }}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-300 rounded text-sm font-medium transition-colors"
               >
                 ↺ 초기화
               </button>
