@@ -22,7 +22,9 @@ export const stockTableColumns: ColumnDef<StockRow>[] = [
     accessorKey: "price",
     header: () => <div className={rightAlign}>가격</div>,
     cell: ({ getValue }) => (
-      <div className={rightAlign}>{formatNumberOrDash(getValue() as number)}</div>
+      <div className={rightAlign}>
+        {formatNumberOrDash(getValue() as number)}
+      </div>
     ),
   },
 
@@ -40,7 +42,9 @@ export const stockTableColumns: ColumnDef<StockRow>[] = [
     accessorKey: "PER",
     header: () => <div className={rightAlign}>PER</div>,
     cell: ({ getValue }) => (
-      <div className={rightAlign}>{formatNumberOrDash(getValue() as number)}</div>
+      <div className={rightAlign}>
+        {formatNumberOrDash(getValue() as number)}
+      </div>
     ),
   },
   {
@@ -105,28 +109,36 @@ export const stockTableColumns: ColumnDef<StockRow>[] = [
     accessorKey: "PBR",
     header: () => <div className={rightAlign}>PBR</div>,
     cell: ({ getValue }) => (
-      <div className={rightAlign}>{formatNumberOrDash(getValue() as number)}</div>
+      <div className={rightAlign}>
+        {formatNumberOrDash(getValue() as number)}
+      </div>
     ),
   },
   {
     accessorKey: "evEbitda",
     header: () => <div className={rightAlign}>EV/EBITDA</div>,
     cell: ({ getValue }) => (
-      <div className={rightAlign}>{formatNumberOrDash(getValue() as number)}</div>
+      <div className={rightAlign}>
+        {formatNumberOrDash(getValue() as number)}
+      </div>
     ),
   },
   {
     accessorKey: "PEG",
     header: () => <div className={rightAlign}>PEG</div>,
     cell: ({ getValue }) => (
-      <div className={rightAlign}>{formatNumberOrDash(getValue() as number)}</div>
+      <div className={rightAlign}>
+        {formatNumberOrDash(getValue() as number)}
+      </div>
     ),
   },
   {
     accessorKey: "EPS",
     header: () => <div className={rightAlign}>EPS</div>,
     cell: ({ getValue }) => (
-      <div className={rightAlign}>{formatNumberOrDash(getValue() as number)}</div>
+      <div className={rightAlign}>
+        {formatNumberOrDash(getValue() as number)}
+      </div>
     ),
   },
   {
@@ -154,11 +166,14 @@ export const stockTableColumns: ColumnDef<StockRow>[] = [
       const colorClass = diff > -5 ? "text-red-400" : "text-gray-400"; // 신고가 근접 시 빨간색 강조
 
       return (
-        <div className="flex flex-col items-end">
-          <span>{high.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-          <span className={`text-xs ${colorClass}`}>
-            ({diff.toFixed(1)}%)
+        <div className="flex flex-row items-center justify-end gap-1">
+          <span>
+            {high.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
           </span>
+          <span className={`text-xs ${colorClass}`}>({diff.toFixed(1)}%)</span>
         </div>
       );
     },
@@ -177,10 +192,16 @@ export const stockTableColumns: ColumnDef<StockRow>[] = [
       const colorClass = diff < 5 ? "text-blue-400" : "text-gray-400"; // 신저가 근접(바닥) 시 파란색 강조 (한국식)
 
       return (
-        <div className="flex flex-col items-end">
-          <span>{low.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+        <div className="flex flex-row items-center justify-end gap-1">
+          <span>
+            {low.toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
           <span className={`text-xs ${colorClass}`}>
-            ({diff > 0 ? "+" : ""}{diff.toFixed(1)}%)
+            ({diff > 0 ? "+" : ""}
+            {diff.toFixed(1)}%)
           </span>
         </div>
       );
@@ -193,13 +214,14 @@ export const stockTableColumns: ColumnDef<StockRow>[] = [
       const current = Number(row.original.price);
       if (isNaN(current)) return <div className={rightAlign}>-</div>;
 
-
       const ma200 = Number(row.original.Day200MA);
       if (!ma200) return <div className={rightAlign}>-</div>;
 
       const isBull = current > ma200;
       return (
-        <div className={`${rightAlign} ${isBull ? "text-red-400" : "text-blue-400"}`}>
+        <div
+          className={`${rightAlign} ${isBull ? "text-red-400" : "text-blue-400"}`}
+        >
           {isBull ? "상승장" : "하락장"}
         </div>
       );
@@ -208,6 +230,6 @@ export const stockTableColumns: ColumnDef<StockRow>[] = [
 ];
 
 // 순서를 보장하기 위한 키 배열도 여기서 추출하여 관리할 수 있습니다.
-export const FIXED_COLUMN_ORDER = stockTableColumns.map(
-  (col) => (col as any).accessorKey as string
-);
+export const FIXED_COLUMN_ORDER = stockTableColumns
+  .filter((col) => "accessorKey" in col)
+  .map((col) => (col as { accessorKey: string }).accessorKey);
