@@ -1,0 +1,390 @@
+STOCK_INFO Project Overview
+
+I am building a side project called STOCK_INFO.
+
+The project is a US stock analysis and screening platform focused on fundamental data, not short-term trading execution. The goal is to help retail investors quickly understand, compare, and filter stocks using structured financial metrics and strategy-based screening logic.
+
+This project is intended to become a fundamental-oriented stock screener + investment decision support tool with a user-friendly interface for quickly judging whether a stock looks attractive.
+
+1. Core Product Goal
+
+The main purpose of this project is:
+
+to analyze US stocks using fundamental data
+to provide a stock screener centered on valuation, profitability, growth, and dividend metrics
+to help individual investors make faster and more informed decisions
+to build a UI that allows users to understand “what kind of stock this is” at a glance
+Current direction
+
+This project is not currently focused on real-time trading execution or day trading UI.
+
+Instead, the product direction is:
+
+real-time trading UI: on hold
+fundamental-based filtering and recommendation system: main focus
+fast, intuitive UI for retail investors: main focus
+
+So the product should be understood as:
+
+a stock analysis interface that helps users quickly evaluate stocks, rather than a trading terminal
+
+2. High-Level Architecture
+
+The repository is organized like this:
+
+stock_info/
+ ├─ next-app      // backend + API server
+ ├─ react-app     // frontend UI
+ ├─ shared-types  // shared type definitions
+Architectural characteristics
+frontend and backend are separated
+the backend is built with Next.js API routes
+the frontend is a separate React + TypeScript application
+type definitions are centralized in shared-types
+data is delivered primarily through REST APIs
+WebSocket-based real-time functionality existed before, but is currently removed or paused
+
+The architecture is intentionally simple and pragmatic. It is designed to support:
+
+stock list fetching
+batch or per-symbol fundamentals fetching
+frontend rendering and filtering
+later expansion into ranking, recommendation, and cached data delivery
+3. Data Flow
+
+The current flow is roughly as follows.
+
+1) Stock list API
+
+The frontend first retrieves a list of candidate stocks from:
+
+/api/stocks/hot-tickers
+
+This endpoint is designed to return a list of “hot” stocks, currently based on something like:
+
+top 100 stocks by trading volume
+sourced from the EODHD Screener API
+
+This “hot tickers” list acts as the initial universe shown to users.
+
+2) Fundamentals API
+
+For each stock symbol, the frontend requests fundamental data from:
+
+/api/stocks/fundamentals?symbol=AAPL
+
+This endpoint:
+
+calls the EODHD fundamental API
+extracts and transforms useful data fields
+returns cleaned metrics to the client
+
+The backend does not simply proxy raw API results. The intention is to normalize and expose only the fields the frontend actually needs.
+
+3) Frontend merge and rendering flow
+
+On the frontend side, the main UI flow is roughly:
+
+StockTable.tsx
+  ↓
+fetchFundamentalsFor()
+  ↓
+merge symbol list + fundamentals
+  ↓
+render table
+
+So the client:
+
+fetches a stock universe
+fetches the fundamentals for those symbols
+merges the data into a renderable format
+displays everything in a stock table UI
+
+This is the current core interaction model.
+
+4. Tech Stack
+Frontend
+
+The frontend stack currently includes:
+
+React
+TypeScript
+Radix UI
+custom UI components
+
+State handling is intentionally simple for now:
+
+mostly useState
+no heavy global state solution is being emphasized at this stage
+Current frontend structure
+
+The main frontend pages/components include:
+
+Home.tsx
+entry point that renders the main stock screen
+StockTable.tsx
+the central stock table view and the most important component right now
+SearchBar
+search/filter input component
+FundamentalSettings
+UI for selecting which fundamental metrics to display or filter by
+Backend
+
+The backend currently uses:
+
+Next.js API Routes
+EODHD API as the primary stock/fundamental data source
+
+The backend is mainly responsible for:
+
+fetching external stock data
+transforming and exposing selected fields
+serving hot ticker lists and fundamentals to the frontend
+Previous / paused real-time architecture
+
+There was an earlier real-time data design based on:
+
+Finnhub WebSocket
+custom socket handling
+live trade updates
+
+However, that real-time approach is currently paused / removed from the main direction.
+
+The current product focus is now much more on:
+
+fundamentals
+screening
+ranking
+recommendation logic
+
+rather than live tick-by-tick updates.
+
+Possible future infrastructure direction
+
+A future idea is to:
+
+fetch close price or market data on a scheduled basis
+store processed JSON in S3 or another external storage
+have the frontend fetch cached JSON instead of always hitting upstream APIs directly
+
+This would help with:
+
+API cost optimization
+performance
+stability
+consistent daily snapshots
+5. Current Core Features
+1) Fundamental data table
+
+The main feature at the moment is a stock table that displays financial metrics such as:
+
+PER
+EPS
+PBR
+ROE
+dividend yield
+market cap
+volume
+and similar metrics
+
+This allows users to compare multiple stocks side by side.
+
+2) Fundamental filter system
+
+A major planned focus is the filtering system.
+
+Examples of intended filters include:
+
+low PER
+high ROE
+high EPS growth
+high dividend yield
+value-oriented filters
+growth-oriented filters
+stability filters
+
+The filtering system is one of the project’s core features and should become a major part of the product experience.
+
+3) Recommended stock groups
+
+The project also aims to present predefined stock groups, such as:
+
+Hot 100 stocks
+Momentum / sharp gainers
+High dividend stocks
+Earnings growth stocks
+Undervalued value stocks
+52-week high stocks
+
+These groups are meant to give users immediate entry points instead of forcing them to start from a blank screen.
+
+6. Differentiation / Product Ideas
+
+This project is not only about showing raw numbers. One of the important goals is to make the product easier to understand and more investor-friendly than a plain spreadsheet.
+
+Some key differentiation ideas are:
+
+1) One-line stock summary cards
+
+A feature like:
+
+“What is this stock in one sentence?”
+
+The idea is to summarize a stock very quickly using a concise explanation based on its financial profile.
+
+Example concept:
+
+“Profitable large-cap tech stock with moderate valuation and strong margins”
+“High-growth but expensive stock with weak dividend appeal”
+“Value-oriented dividend stock with stable cash flow”
+
+This would make the product more approachable for retail users.
+
+2) Investment checklist UI
+
+The project may include a checklist or scorecard style view to visualize whether a stock passes certain conditions.
+
+Examples:
+
+profitability
+growth
+valuation attractiveness
+leverage safety
+dividend quality
+
+This could be shown as:
+
+stars
+pass/fail badges
+checklist rows
+category score summaries
+3) Famous investor style filters
+
+One of the key ideas is to provide predefined screening strategies inspired by well-known investing styles.
+
+Examples include:
+
+Warren Buffett style
+Peter Lynch growth style
+Greenblatt Magic Formula
+Benjamin Graham low-PER or value style
+dividend/stability oriented filters
+sector-based filters such as technology-heavy screens
+
+This is an important feature because it makes the screener more opinionated and useful than generic metric filtering.
+
+4) Mock portfolio / watchlist tracking
+
+A future feature is a simulated portfolio or watchlist-based profit tracking system.
+
+This would allow users to:
+
+track selected stocks
+simulate returns
+compare picked groups over time
+monitor ideas without placing real trades
+
+This feature is planned, not the current main focus.
+
+7. Data Model / Important Fields
+
+The project currently manages roughly 30 or so stock-related fields based on the EODHD fundamental API structure.
+
+Representative fields include:
+
+PER
+EPS
+PBR
+ROE
+PEG
+revenue growth
+operating margin
+profit margin
+EV/EBITDA
+EV/EBIT
+dividend yield
+payout ratio
+market cap
+volume
+sector
+book value
+EBITDA
+Wall Street target price
+analyst EPS estimates
+quarterly revenue growth
+quarterly earnings growth
+return on assets
+revenue per share
+gross profit
+and similar fields
+
+The general goal is to build a structured stock data model that supports:
+
+screening
+sorting
+strategy presets
+ranking
+recommendation summaries
+8. Current Direction and Product Identity
+
+The most important thing to understand about this project is:
+
+This is not intended to be a high-frequency trading dashboard or broker-like terminal.
+
+It is intended to be:
+
+a fast stock analysis UI for retail investors, centered on fundamentals and stock selection logic
+
+So the emphasis is on:
+
+understanding
+screening
+comparing
+narrowing candidates
+strategy-based exploration
+
+rather than:
+
+live order execution
+real-time trade micro-visualization
+professional trading workflows
+9. Roadmap / TODO
+
+Planned next steps include:
+
+default sorting behavior
+for example, sorted by PER ascending on initial load
+filter tab UI
+such as predefined tabs for low PER, high EPS growth, high dividend, etc.
+card view option
+in addition to table view
+i18n support
+especially Korean and English, possibly more later
+cached close-price data stored in S3 or external storage
+more advanced recommendation logic
+richer stock summary presentation
+better strategy presets and ranking logic
+10. Summary in One Sentence
+
+A concise summary of the project is:
+
+STOCK_INFO is a React + Next.js based US stock screening and analysis platform that uses EODHD fundamental data to help retail investors quickly compare, filter, and evaluate stocks through structured financial metrics and strategy-based screening.
+
+11. Additional Context for AI Assistance
+
+When helping with this project, it is important to keep the following in mind:
+
+prioritize fundamental screening UX over trading UX
+focus on clarity and investor usefulness
+assume the project is for retail investors, not professional traders
+the backend should remain relatively simple and practical
+type safety across frontend/backend is important
+shared type definitions are part of the design
+real-time WebSocket features are currently not the main priority
+recommendation presets and investor-style filters are an important part of the product vision
+the UI should feel actionable and easy to understand, not like a raw financial data dump
+12. Shorter Version
+
+If a shorter prompt is needed, this can be used:
+
+I am building a side project called STOCK_INFO. It is a React + Next.js based US stock screener focused on fundamental analysis rather than real-time trading. The frontend is a React + TypeScript app, the backend is built with Next.js API routes, and shared types are managed in a separate shared-types package. The app fetches hot US stock tickers and their fundamentals from EODHD, then renders them in a table for comparison, filtering, and strategy-based screening. The main goal is to help retail investors quickly evaluate stocks using metrics such as PER, EPS, PBR, ROE, PEG, dividend yield, market cap, and growth/profitability data. Planned features include predefined investor-style filters, stock summary cards, investment checklists, sorting, card view, i18n, and cached data delivery.
