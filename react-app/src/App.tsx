@@ -9,16 +9,13 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState("");
 
   return (
-    <div className="min-h-screen bg-[#1E1E2F] text-white flex flex-col">
+    <div className="min-h-screen bg-[#0d0d0d] text-white flex flex-col">
       <BrowserRouter>
-        {/* PC 중심 설정: 일반 min-h-screen 사용, 여백도 데스크탑 기준으로 고정 */}
-        <div className="w-full px-6 py-8 flex-1 max-w-[1920px] mx-auto min-h-screen flex flex-col">
-          <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-            <div className="flex-1">
-              <Routes>
-                <Route path="/" element={<Home searchQuery={searchQuery} />} />
-              </Routes>
-            </div>
+        <Header searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+        <div className="flex-1 px-4 py-3 w-full max-w-[1920px] mx-auto">
+          <Routes>
+            <Route path="/" element={<Home searchQuery={searchQuery} />} />
+          </Routes>
         </div>
         <Footer />
       </BrowserRouter>

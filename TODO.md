@@ -2,9 +2,23 @@
    - 내용: 워렌 버핏, 피터 린치 등 유명 투자자 필터의 기준이 실제 투자 철학과 일치하는지 팩트체크 및 로직 수정.
    - 기능: 각 필터 버튼에 마우스 오버(Tooltip) 또는 물음표(?) 아이콘을 추가하여 어떤 기준으로 필터링되는지 사용자에게 설명 제공.
 
-1. [데이터 수집 서버]를 만들기
-   ・역할：장 종료 시점(EODHD API 갱신 시점)에 모든 티커에 대해 API를 실행하고, S3에 데이터를 저장하는 서버
+1. [데이터 수집 배치 파이프라인] 구축 ← 🔴 다음 세션에서 바로 시작할 것
 
+   ## 확정된 설계
+   - 데이터 갱신: 1일 1회 (장 마감 후) — 리얼타임 불필요
+   - 스케줄러: GitHub Actions cron (무료)
+   - 저장소: AWS S3 (비용 ~$0/월)
+   - 프론트: S3 URL 직접 fetch → Next.js 백엔드 삭제 예정
+
+   ## 작업 순서 (다음 세션 시작 시 이 순서로 제시할 것)
+
+   Step 1. S3 버킷 생성 + CORS 설정 (30분)
+   Step 2. scripts/fetch_tickers.py 완성도 확인 후 보완
+   Step 3. GitHub Actions 스케줄러 설정 (30분)
+   Step 4. 프론트 fetch URL → S3로 교체 (fundamentalsFetcher.tsx)
+   Step 5. Next.js 백엔드(next-app/) 삭제
+
+   ・역할：장 종료 시점(EODHD API 갱신 시점)에 모든 티커에 대해 API를 실행하고, S3에 데이터를 저장하는 서버
    1. 모든 티커명.json(https://eodhd.com/api/exchange-symbol-list/{EXCHANGE_CODE}?delisted=1&api_token={YOUR_API_TOKEN}&fmt=json)
    2. 모든 티커의 펀더멘탈.json(https://eodhd.com/api/fundamentals/${symbol}.US?api_token=${apiKey}&fmt=json)
    3. 모든 티커의 종가.json(https://eodhd.com/api/eod/${symbol}.US?api_token=${apiKey}&fmt=json&limit=1)
@@ -20,12 +34,10 @@
    예) 52주 최고가, 최근 거래량 많음 등등
 
 5. 종가 데이터 취득 방식
-
    1. 매일 아침 5~6시(미장 종료 후), 모든 티커의 종가를 얻어오는 API를 실행한다.
    2. 결과를 JSON으로 S3에 저장하고, 이 값을 캐싱해서 화면에 뿌려준다.
 
 6. 급등주 계산 로직
-
    1. 5일 누적 상승률 +20% 이상(개잡주도 필터링 되지만, 유저 판단에 맡긴다)
 
 7. PRO Mode 도입
@@ -62,3 +74,18 @@
     - 목표: 개발 속도 향상 및 디자인 일관성 확보.
 
 13. (나중에) 빨강/파랑 색상 테마 국제화 옵션 (미국식 녹색/적색 vs 한국식 적색/청색)
+
+(나중에 정리해줘)
+
+Phase 1. 데이터 인프라 ← 다음 작업 └─ S3 배치 파이프라인 구축  
+ └─ Next.js 백엔드 제거  
+ Phase 2. UI 다듬기 ← 병행 가능  
+ └─ 필터/컬럼 세부 조정  
+ └─ 유명 투자자 필터 팩트체크
+
+Phase 3. 기능 확장 ← 데이터 안정화 후
+└─ 종목 요약 카드
+└─ 투자 체크리스트 UI
+└─ 급등주 계산
+└─ PRO Mode
+└─ 카드뷰

@@ -26,7 +26,7 @@ interface StockDataTableProps {
 }
 
 // 행 높이 고정 (줄바꿈 방지 및 스켈레톤 일치용)
-const ROW_HEIGHT = 40;
+const ROW_HEIGHT = 32;
 
 export default function StockDataTable({
   data,
@@ -123,41 +123,38 @@ export default function StockDataTable({
   return (
     <div>
       {/* 보기 설정 드롭다운 */}
-      <div className="flex justify-end items-center mb-2">
-        <div className="flex items-center gap-2 text-sm">
-          <label className="text-gray-400">페이지당 보기:</label>
+      <div className="flex justify-end items-center mb-1">
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <label>Rows:</label>
           <select
             value={pageSize}
             onChange={(e) => {
               setPageSize(Number(e.target.value));
               setPageIndex(0);
             }}
-            className="bg-[#2A2A40] text-white border border-gray-600 rounded px-2 py-1 focus:outline-none focus:border-blue-500"
+            className="bg-[#1a1a1a] text-gray-300 border border-[#2a2a2a] rounded px-2 py-0.5 focus:outline-none focus:border-blue-500"
           >
             {[10, 20, 50, 100].map((size) => (
               <option key={size} value={size}>
-                {size}개
+                {size}
               </option>
             ))}
           </select>
         </div>
       </div>
 
-      <Table>
-        <TableHeader className="bg-[#2A2A40] sticky top-0 z-10">
+      <Table className="text-xs">
+        <TableHeader className="bg-[#1a1a1a] sticky top-0 z-10">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id} className="text-white">
+            <TableRow key={headerGroup.id} className="text-gray-400 border-b border-[#2a2a2a]">
               {headerGroup.headers.map((header) => (
                 <TableHead
                   key={header.id}
                   onClick={header.column.getToggleSortingHandler()}
-                  className="cursor-pointer px-4 py-2 select-none"
-                  style={{ height: "50px" }}
+                  className="cursor-pointer px-3 py-0 select-none text-gray-400 hover:text-white transition-colors"
+                  style={{ height: "34px" }}
                 >
-                  {flexRender(
-                    header.column.columnDef.header,
-                    header.getContext(),
-                  )}
+                  {flexRender(header.column.columnDef.header, header.getContext())}
                   {header.column.getIsSorted() === "asc" && " ▲"}
                   {header.column.getIsSorted() === "desc" && " ▼"}
                 </TableHead>
@@ -167,19 +164,18 @@ export default function StockDataTable({
         </TableHeader>
         <TableBody>
           {isLoading
-            ? // 로딩 중일 때 스켈레톤 표시 (깜빡임 방지용 높이 고정)
-              Array.from({ length: pageSize }).map((_, i) => (
+            ? Array.from({ length: pageSize }).map((_, i) => (
                 <TableRow
                   key={`skeleton-${i}`}
-                  className="border-b border-[#2E2E3E]"
+                  className={`border-b border-[#1e1e1e] ${i % 2 === 0 ? "bg-[#0d0d0d]" : "bg-[#111]"}`}
                 >
                   {table.getVisibleFlatColumns().map((col) => (
                     <TableCell key={col.id} className="p-0">
                       <div
                         style={{ height: `${ROW_HEIGHT}px` }}
-                        className="w-full flex items-center px-4"
+                        className="w-full flex items-center px-3"
                       >
-                        <div className="h-4 w-full bg-[#33334D] rounded animate-pulse" />
+                        <div className="h-3 w-full bg-[#222] rounded animate-pulse" />
                       </div>
                     </TableCell>
                   ))}
@@ -188,73 +184,63 @@ export default function StockDataTable({
             : table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  // 높이 강제 고정
-                  className="hover:bg-[#33334D] border-b border-[#2E2E3E]"
+                  className={`border-b border-[#1e1e1e] hover:bg-[#1a2535] transition-colors ${
+                    row.index % 2 === 0 ? "bg-[#0d0d0d]" : "bg-[#111]"
+                  }`}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="p-0 text-left">
-                      {/* 셀 내부 div에 높이 지정 */}
                       <div
                         style={{ height: `${ROW_HEIGHT}px` }}
-                        className="flex items-center px-4 w-full"
+                        className="flex items-center px-3 w-full"
                       >
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext(),
-                        )}
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </div>
                     </TableCell>
                   ))}
                 </TableRow>
               ))}
 
-          {/* 데이터 부족 시 빈 행 채우기 (레이아웃 유지) - 선택사항이지만 깜빡임 방지에 좋음 */}
           {!isLoading &&
             table.getRowModel().rows.length < pageSize &&
-            Array.from({
-              length: pageSize - table.getRowModel().rows.length,
-            }).map((_, i) => (
-              <TableRow
-                key={`empty-${i}`}
-                className="border-b border-[#2E2E3E]"
-              >
-                <TableCell
-                  colSpan={table.getVisibleFlatColumns().length}
-                  className="p-0"
+            Array.from({ length: pageSize - table.getRowModel().rows.length }).map((_, i) => {
+              const rowIndex = table.getRowModel().rows.length + i;
+              return (
+                <TableRow
+                  key={`empty-${i}`}
+                  className={`border-b border-[#1e1e1e] ${rowIndex % 2 === 0 ? "bg-[#0d0d0d]" : "bg-[#111]"}`}
                 >
-                  <div style={{ height: `${ROW_HEIGHT}px` }}></div>
-                </TableCell>
-              </TableRow>
-            ))}
+                  <TableCell colSpan={table.getVisibleFlatColumns().length} className="p-0">
+                    <div style={{ height: `${ROW_HEIGHT}px` }}></div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
         </TableBody>
       </Table>
 
-      <div className="flex justify-end items-center mt-4 gap-4 text-sm">
+      <div className="flex justify-end items-center mt-2 gap-3 text-xs text-gray-500">
         <span>
-          {/* 데이터가 없거나 로딩중일때 처리 */}
-          {isLoading ? (
-            "로딩 중..."
-          ) : (
+          {isLoading ? "" : (
             <>
-              총 {data.length}개 중 {pageIndex * pageSize + 1}~
-              {Math.min((pageIndex + 1) * pageSize, data.length)}개 표시 중
+              {pageIndex * pageSize + 1}–{Math.min((pageIndex + 1) * pageSize, data.length)} / {data.length}
             </>
           )}
         </span>
-        <div className="flex gap-2">
+        <div className="flex gap-1">
           <button
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage() || isLoading}
-            className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-40"
+            className="px-2.5 py-0.5 bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 rounded hover:text-white disabled:opacity-30 transition-colors"
           >
-            이전
+            ‹ Prev
           </button>
           <button
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage() || isLoading}
-            className="px-3 py-1 bg-gray-700 text-white rounded disabled:opacity-40"
+            className="px-2.5 py-0.5 bg-[#1a1a1a] border border-[#2a2a2a] text-gray-400 rounded hover:text-white disabled:opacity-30 transition-colors"
           >
-            다음
+            Next ›
           </button>
         </div>
       </div>

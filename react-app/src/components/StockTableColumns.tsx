@@ -2,7 +2,7 @@ import { ColumnDef } from "@tanstack/react-table";
 import { StockRow } from "@/assets/type/type";
 import { formatNumberOrDash } from "@/lib/utils";
 
-const rightAlign = "text-right";
+const rightAlign = "text-right w-full";
 
 export const stockTableColumns: ColumnDef<StockRow>[] = [
   // --- 기본 정보 (Basic) ---

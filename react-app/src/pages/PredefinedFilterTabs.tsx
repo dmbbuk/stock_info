@@ -14,7 +14,7 @@ const predefined: {
   descriptionKey?: string;
 }[] = [
   {
-    label: "📉 워렌 버핏 가치주",
+    label: "워렌 버핏 가치주",
     descriptionKey: "워렌 버핏 가치주",
     filters: {
       PER: { kind: "num", op: "<", value: 25 }, // 20 -> 25 완화
@@ -25,7 +25,7 @@ const predefined: {
     },
   },
   {
-    label: "📈 피터 린치 성장주",
+    label: "피터 린치 성장주",
     descriptionKey: "피터 린치 성장주",
     filters: {
       PEG: { kind: "num", op: "<=", value: 1 },
@@ -35,7 +35,7 @@ const predefined: {
     },
   },
   {
-    label: "📚 벤저민 그레이엄 저PER",
+    label: "벤저민 그레이엄 저PER",
     descriptionKey: "벤저민 그레이엄 저PER",
     filters: {
       PER: { kind: "num", op: "<", value: 15 },
@@ -43,7 +43,7 @@ const predefined: {
     },
   },
   {
-    label: "🔮 그린블라트 마법공식",
+    label: "그린블라트 마법공식",
     descriptionKey: "그린블라트 마법공식",
     filters: {
       returnOnCapital: { kind: "num", op: ">=", value: 0.3 }, // 0.5 -> 0.3 현실화
@@ -51,7 +51,7 @@ const predefined: {
     },
   },
   {
-    label: "🏦 고배당 안정주",
+    label: "고배당 안정주",
     descriptionKey: "고배당 안정주",
     filters: {
       dividendYield: { kind: "num", op: ">=", value: 3 },
@@ -60,14 +60,14 @@ const predefined: {
     },
   },
   {
-    label: "📊 저PBR 자산주",
+    label: "저PBR 자산주",
     filters: {
       PBR: { kind: "num", op: "<", value: 1 },
       PER: { kind: "num", op: "<", value: 15 },
     },
   },
   {
-    label: "🚀 실적 성장주",
+    label: "실적 성장주",
     filters: {
       epsGrowth: { kind: "num", op: ">=", value: 0.15 },
       revenueGrowth: { kind: "num", op: ">=", value: 0.1 },
@@ -75,13 +75,13 @@ const predefined: {
     },
   },
   {
-    label: "🧪 기술주 필터",
+    label: "기술주 필터",
     filters: {
       sector: { kind: "enum", equals: "Technology" },
       PER: { kind: "num", op: "<", value: 40 },
     },
   },
-  { label: "🔥 급등주", filters: {} },
+  { label: "급등주", filters: {} },
 ];
 
 const PredefinedFilterTabs = ({ onApplyFilter, activePreset }: Props) => {

@@ -2,15 +2,19 @@
 
 이 파일은 Claude Code가 어느 계정에서 열어도 동일한 컨텍스트로 작업할 수 있도록 git에 포함되는 프로젝트 전용 설정 파일입니다.
 
+> ⚠️ **Claude에게**: 이 파일을 읽었으면 즉시 `TODO.md`를 Read 툴로 읽어라.  
+> 그 후 사용자에게 "오늘 우선순위는 N번입니다. 작업할까요?" 라고 보고하는 것이 **모든 세션의 첫 번째 행동**이다.  
+> `To_claude_code.txt`는 이 파일에 통합 완료 — 별도로 읽지 않아도 된다.
+
 **세션 시작 시 반드시 할 것:**
-1. 이 파일 전체 읽기
-2. `To_claude_code.txt` 읽기 (처음 접하는 경우)
-3. `TODO.md` 읽기
-4. 현재 우선순위 섹션 확인 후 작업 시작
+1. 이 파일 전체 읽기 (시스템에서 자동 로드됨)
+2. `TODO.md` Read 툴로 읽기 → 현재 우선순위 파악
+3. 사용자에게 현재 우선순위 보고 후 작업 시작
 
 **세션 종료(작업 완료) 시 반드시 할 것:**
 1. 이 파일의 "현재 구현 상태"와 "현재 우선순위" 섹션 업데이트
-2. git 커밋에 포함
+2. "세션 회의록" 섹션에 오늘 작업 내용 요약 추가 (다른 계정 연계 목적)
+3. git 커밋에 포함
 
 ---
 
@@ -128,8 +132,8 @@
 
 ## 필수 참조 파일
 
-- `To_claude_code.txt` — 프로젝트 전체 소개 (처음 접하는 경우 반드시 읽을 것)
-- `TODO.md` — 현재 작업 우선순위
+- `TODO.md` — 현재 작업 우선순위 (매 세션 시작 시 반드시 읽을 것)
+- `To_claude_code.txt` — 프로젝트 전체 소개 원본 (이미 이 파일에 통합됨, 별도 읽기 불필요)
 
 ---
 
@@ -180,6 +184,9 @@ GET /api/stocks/recommendations              # 추천
 | 펀더멘털 테이블 | 구현됨 (StockDataTable.tsx, StockTableColumns.tsx) |
 | 필터 시스템 | 구현됨 (FundamentalFilter.tsx, filterEngine.tsx) |
 | 유명 투자자 필터 탭 | 구현됨 (PredefinedFilterTabs.tsx) — 고도화 필요 |
+| UI 디자인 | Finviz 스타일로 전면 리뉴얼 완료 (2026-04-09) |
+| 뷰 탭 | 구현됨 — Overview / Valuation / Financial / Technical / Custom |
+| 인라인 필터 그리드 | 구현됨 — 패널/오버레이 제거, 항상 노출 |
 | WebSocket | 코드 잔존하나 비활성 (현재 방향 아님) |
 | 테스트 환경 | 미구축 — test/ 폴더에 점진적 구축 예정 |
 | Mock 데이터 | 구비됨 (10,000개 종목 JSON) |
@@ -207,18 +214,83 @@ react-app/src/
 
 ## 현재 우선순위 (TODO.md 기준)
 
-1. **[0순위]** 유명 투자자 필터 팩트체크 + Tooltip 설명 추가
-2. 데이터 수집 서버 구축 (장 종료 후 EODHD → S3 저장)
-3. Gzip 압축 전송 (10MB → ~2MB)
-4. 비동기 fetch + 로딩 스켈레톤 UI
+1. 데이터 수집 배치 파이프라인 구축 (장 종료 후 EODHD → S3 저장)
+2. Gzip 압축 전송 (10MB → ~2MB)
+3. 비동기 fetch + 로딩 스켈레톤 UI (기골격 있음)
+4. 유명 투자자 필터 팩트체크 + Tooltip 고도화
 5. 테이블 우측 요약 컬럼
+
+---
+
+## 제품 차별화 아이디어 (To_claude_code.txt에서 통합)
+
+단순 숫자 나열이 아닌, 리테일 투자자가 이해하기 쉬운 UI가 목표.
+
+### 1. 한 줄 종목 요약 카드
+"이 종목은 한 문장으로 무엇인가?" 개념. 재무 프로파일 기반 자동 생성.
+- 예: `"수익성 높은 대형 기술주, 적정 밸류에이션, 강한 마진"`
+- 예: `"고성장이지만 고평가, 배당 매력 낮음"`
+
+### 2. 투자 체크리스트 UI
+종목이 특정 조건을 통과하는지 시각화.
+- 수익성 / 성장성 / 밸류에이션 / 부채 안전성 / 배당 품질
+- 표시 방식: 별점, pass/fail 뱃지, 체크리스트 행, 카테고리 점수 요약
+
+### 3. 카드뷰 옵션
+테이블 뷰 외에 카드 형태의 뷰 추가 예정.
+
+### 4. 목업 포트폴리오 / 관심종목 추적
+- 선택 종목 추적, 수익 시뮬레이션, 그룹별 성과 비교
+- 실제 매매 없이 아이디어 모니터링
+- 계획 단계, 현재 메인 포커스 아님
+
+### 5. 기본 정렬
+초기 로딩 시 PER 오름차순 정렬 등 기본값 설정 예정.
 
 ---
 
 ## 중요 결정사항 / 컨텍스트
 
 - WebSocket 기능은 코드가 남아있지만 현재 방향 아님 — 삭제 or 유지 미결정
-- 향후 S3에 JSON 캐싱 → 프론트가 직접 S3에서 fetch하는 구조 고려 중
-- UI 라이브러리 변경 검토 중 (DaisyUI, NextUI 후보)
+- **[확정] 아키텍처 방향: 배치 수집 + S3 캐싱 + 프론트 직접 fetch**
+  - 장 종료 후 1회 Python 스크립트 실행 → EODHD API 호출 → JSON.gz S3 업로드
+  - React SPA가 S3 URL에서 직접 fetch → 클라이언트 필터링 (현재 구조 그대로)
+  - 이 구조면 Next.js 백엔드(next-app/) 불필요 — 삭제 여부 미결정
+- **[미결] 데이터 API: EODHD(현재) vs FMP(Financial Modeling Prep)** — 비교 후 결정 필요
+- **[미결] 배치 스케줄러: GitHub Actions cron vs AWS Lambda+EventBridge** — 미결정
+- 스크리너는 리얼타임 데이터 불필요 (Finviz Free도 15분 지연, 펀더멘털은 분기 단위)
+- UI 디자인: Finviz 스타일로 완료 — DaisyUI/NextUI 전환 검토 보류
 - 빨강/파랑 색상 테마 국제화 옵션 (미국식 vs 한국식) 나중에 고려
 - PRO Mode 아이디어 존재 (추가 필터, 직접 입력, 즐겨찾기)
+
+---
+
+## 세션 회의록
+
+> 각 세션 종료 시 Claude가 작성. 다른 계정과의 컨텍스트 연계 목적.  
+> 형식: 날짜 / 작업 내용 / 결정사항 / 미결사항
+
+---
+
+### 2026-04-09
+
+**작업 내용:**
+- Finviz(finviz.com/screener) 디자인 참고하여 UI 전면 리뉴얼
+  - `App.tsx`: 배경 `#0d0d0d`, 레이아웃 패딩 축소
+  - `Header.tsx`: 슬림 네비 바 (h-11) — STOCKSCREENER 로고 + 검색창만
+  - `SearchBar.tsx`: 네비 바용 compact 스타일
+  - `FundamentalFilter.tsx`: `compact` prop 추가 — 패널 오버레이 제거, 인라인 드롭다운 그리드로 전환
+  - `StockTable.tsx`: 전면 재구성 — 뷰탭(Overview/Valuation/Financial/Technical/Custom) 도입, 필터 상시 노출
+  - `StockDataTable.tsx`: 행 높이 40→32px, zebra striping, text-xs, compact 페이지네이션
+  - `PredefinedFilterTabs.tsx`: 프리셋 버튼 이모지 전부 제거
+  - `StockTableColumns.tsx`: `rightAlign`에 `w-full` 추가 → 헤더/값 정렬 불일치 버그 수정
+
+**결정사항:**
+- 스크리너는 리얼타임 데이터 불필요 — 배치(1일 1회) 충분
+- 아키텍처 확정: 배치 수집 → S3 업로드 → 프론트 직접 fetch (Next.js 백엔드 불필요 방향)
+- UI 기준 레퍼런스: Finviz 스타일로 확정
+
+**미결사항:**
+- 데이터 API 최종 선택: EODHD vs FMP
+- 배치 스케줄러: GitHub Actions cron vs AWS Lambda+EventBridge
+- Next.js 백엔드(`next-app/`) 삭제 여부

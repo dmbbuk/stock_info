@@ -4,16 +4,16 @@ import { FILTER_TOOLTIPS } from "@/constants/tooltipStrings";
 import { useState } from "react";
 
 type Props = {
-  // 규칙 객체 기반 (없으면 해당 필터 미적용)
   filters: Partial<Record<FilterKey, FilterRule | undefined>>;
-  // 변경 핸들러: 규칙 객체 or undefined(ALL)
   onChange: (field: FilterKey, rule?: FilterRule) => void;
+  /** Finviz 스타일 인라인 필터 그리드 모드 */
+  compact?: boolean;
 };
 
 // ----- 라벨(표시 텍스트) -----
 const LABELS: Record<string, string> = {
-  ALL: "전체",
-  "-0": "0 미만",
+  ALL: "Any",
+  "-0": "< 0",
   "0-1": "0~1",
   "1-2": "1~2",
   "1-3": "1~3",
@@ -34,51 +34,50 @@ const LABELS: Record<string, string> = {
   "0-0.05": "0~0.05",
   "0.05-0.1": "0.05~0.1",
   "0.1-0.3": "0.1~0.3",
-  "0.3-": "0.3 이상",
+  "0.3-": "0.3+",
   "0.5-1": "0.5~1",
-  "1-": "1 이상",
-  "5-": "5 이상",
-  "10-": "10 이상",
-  "15-": "15 이상",
-  "20-": "20 이상",
-  "40-": "40 이상",
-  "100-": "100 이상",
-  "300-": "300 이상",
-  "100000-": "10만 이상",
-  "1000000-": "100만 이상",
-  "10000000-": "1,000만 이상",
-  "100000000-": "1억 이상",
-  "1000000000-": "10억 이상",
-  "5000000000-": "50억 이상",
-  "10000000000-": "100억 이상",
-  "20000000000-": "200억 이상",
-  "-1": "1 미만",
-  "-3": "3 미만",
-  "-5": "5 미만",
-  "-10": "10 미만",
-  "-15": "15 미만",
-  "-20": "20 미만",
-  "-25": "25 미만",
-  "-40": "40 미만",
-  "-50": "50 미만",
-  "-100": "100 미만",
-  "-300": "300 미만",
-  "-0.6": "0.6 미만",
-  "-1.5": "1.5 미만",
-  "3-": "3 이상",
-  "0.1-": "0.1 이상",
-  "0.15-": "0.15 이상",
-  Technology: "기술 (Technology)",
-  earningsYield: "이익수익률 (EY)",
-  returnOnCapital: "자본수익률 (ROC)",
-  // Technicals
-  Week52High: "52주 최고가 (근접)", // 현재가가 최고가 대비 어느 정도인지
-  Week52Low: "52주 최저가 (근접)", // 현재가가 최저가 대비 어느 정도인지
-  Day50MA: "50일 이평선 (추세)", // 현재가가 50일선 위/아래
-  Day200MA: "200일 이평선 (장기추세)",
+  "1-": "1+",
+  "5-": "5+",
+  "10-": "10+",
+  "15-": "15+",
+  "20-": "20+",
+  "40-": "40+",
+  "100-": "100+",
+  "300-": "300+",
+  "100000-": "100K+",
+  "1000000-": "1M+",
+  "10000000-": "10M+",
+  "100000000-": "100M+",
+  "1000000000-": "1B+",
+  "5000000000-": "5B+",
+  "10000000000-": "10B+",
+  "20000000000-": "20B+",
+  "-1": "< 1",
+  "-3": "< 3",
+  "-5": "< 5",
+  "-10": "< 10",
+  "-15": "< 15",
+  "-20": "< 20",
+  "-25": "< 25",
+  "-40": "< 40",
+  "-50": "< 50",
+  "-100": "< 100",
+  "-300": "< 300",
+  "-0.6": "< 0.6",
+  "-1.5": "< 1.5",
+  "3-": "3+",
+  "0.1-": "10%+",
+  "0.15-": "15%+",
+  "0.2-": "20%+",
+  Technology: "Technology",
+  mega: "Mega (200B+)",
+  large: "Large (10B~200B)",
+  mid: "Mid (2B~10B)",
+  small: "Small (300M~2B)",
+  micro: "Micro (<300M)",
 };
 
-// ----- 필드명 라벨 (한글 매핑) -----
+// ----- 필드명 라벨 (패널 모드용 한글) -----
 const FIELD_NAMES: Record<string, string> = {
   PER: "PER (주가수익비율)",
   PBR: "PBR (주가순자산비율)",
@@ -108,32 +107,39 @@ const FIELD_NAMES: Record<string, string> = {
   volume: "거래량",
   earningsYield: "이익수익률 (마법공식)",
   returnOnCapital: "자본수익률 (마법공식)",
-  epsGrowth: "EPS 성장률",
+  marketCap: "시가총액",
+  sector: "섹터",
+};
+
+// ----- compact 모드용 짧은 라벨 -----
+const COMPACT_LABELS: Record<string, string> = {
+  marketCap: "Market Cap",
+  sector: "Sector",
+  PER: "P/E",
+  PBR: "P/B",
+  dividendYield: "Dividend",
+  roe: "ROE",
+  operatingMargin: "Op. Margin",
+  profitMargin: "Net Margin",
+  PEG: "PEG",
+  revenueGrowth: "Rev. Growth",
+  evEbitda: "EV/EBITDA",
+  volume: "Volume",
 };
 
 const OPTIONS: Record<string, string[]> = {
-  // --- 1. Basic Filters ---
-  sector: ["ALL", "Technology"], // TODO: 전체 섹터 리스트 필요
-  marketCap: [
-    "ALL",
-    "mega", // 200B+
-    "large", // 10B - 200B
-    "mid", // 2B - 10B
-    "small", // 300M - 2B
-    "micro", // < 300M
-  ],
+  sector: ["ALL", "Technology"],
+  marketCap: ["ALL", "mega", "large", "mid", "small", "micro"],
   PER: ["ALL", "-10", "-15", "-20", "-25", "10-20", "20-40", "-40", "40-"],
   dividendYield: ["ALL", "1-", "3-", "5-"],
   roe: ["ALL", "10-", "15-", "20-"],
-
-  // --- 2. Advanced Filters ---
   revenueGrowth: ["ALL", "0.1-", "0.2-", "0.3-"],
   operatingMargin: ["ALL", "10-", "20-", "30-"],
   PBR: ["ALL", "-1", "1-3", "3-"],
   PEG: ["ALL", "-1", "1-", "1-1.5"],
   evEbitda: ["ALL", "-10", "10-20", "20-"],
-
-  // 아래는 사용 안 함 (설정만 유지) - 화면에 렌더링 안 됨
+  volume: ["ALL", "100000-", "1000000-"],
+  // 아래는 화면에 렌더링 안 됨 (설정만 유지)
   EPS: ["ALL"],
   payoutRatio: ["ALL"],
   epsGrowth: ["ALL"],
@@ -153,32 +159,29 @@ const OPTIONS: Record<string, string[]> = {
   QuarterlyRevenueGrowthYOY: ["ALL"],
   GrossProfitTTM: ["ALL"],
   QuarterlyEarningsGrowthYOY: ["ALL"],
-  volume: ["ALL", "100000-", "1000000-"],
   earningsYield: ["ALL"],
   returnOnCapital: ["ALL"],
 };
+
+// compact 모드에서 표시할 필드 (옵션이 있는 것만)
+const COMPACT_FILTER_KEYS: FilterKey[] = [
+  "marketCap", "sector", "PER", "PBR", "dividendYield",
+  "roe", "operatingMargin", "profitMargin", "PEG", "revenueGrowth", "evEbitda", "volume",
+];
 
 // ----- 토큰 ↔ 규칙 객체 변환 -----
 function tokenToRule(token: string): FilterRule | undefined {
   if (!token || token === "ALL") return undefined;
 
-  // Market Cap Presets (1B = 1,000,000,000)
   if (token === "mega") return { kind: "range", min: 200_000_000_000 };
-  if (token === "large")
-    return { kind: "range", min: 10_000_000_000, max: 200_000_000_000 };
-  if (token === "mid")
-    return { kind: "range", min: 2_000_000_000, max: 10_000_000_000 };
-  if (token === "small")
-    return { kind: "range", min: 300_000_000, max: 2_000_000_000 };
+  if (token === "large") return { kind: "range", min: 10_000_000_000, max: 200_000_000_000 };
+  if (token === "mid") return { kind: "range", min: 2_000_000_000, max: 10_000_000_000 };
+  if (token === "small") return { kind: "range", min: 300_000_000, max: 2_000_000_000 };
   if (token === "micro") return { kind: "range", max: 300_000_000 };
 
-  // 1) 숫자 범위(Range) 패턴인지 먼저 확인
-  //    (주의: "Technology" 같은 문자열이 오면 parseFloat가 NaN이 나올 수 있음 등으로
-  //     정규식 체크가 필수)
-
-  const isMaxPattern = /^-\s*-?\d+(\.\d+)?$/; // "-10"  (= 10미만)
-  const isMinPattern = /^-?\d+(\.\d+)?-\s*$/; // "10-"  (= 10이상)
-  const isRangePattern = /^-?\d+(\.\d+)?\s*-\s*-?\d+(\.\d+)?$/; // "10-20" (= 10~20)
+  const isMaxPattern = /^-\s*-?\d+(\.\d+)?$/;
+  const isMinPattern = /^-?\d+(\.\d+)?-\s*$/;
+  const isRangePattern = /^-?\d+(\.\d+)?\s*-\s*-?\d+(\.\d+)?$/;
 
   if (isMaxPattern.test(token)) {
     const max = parseFloat(token.slice(1));
@@ -193,12 +196,9 @@ function tokenToRule(token: string): FilterRule | undefined {
     return { kind: "range", min: parseFloat(minStr), max: parseFloat(maxStr) };
   }
 
-  // 2) 위 숫자 패턴에 안 걸리면, 문자열 일치(enum)로 간주
-  //    (예: "Technology", "Healthcare" 등)
   return { kind: "enum", equals: token };
 }
 
-// Market Cap 역변환 로직 (간단히 매칭)
 function ruleToToken(rule?: FilterRule): string {
   if (!rule) return "ALL";
   if (rule.kind === "range") {
@@ -233,104 +233,114 @@ function ruleToToken(rule?: FilterRule): string {
   }
 }
 
-export default function FundamentalFilter({ filters, onChange }: Props) {
-  // 모바일/클릭 환경 대응을 위한 툴팁 상태 관리
+export default function FundamentalFilter({ filters, onChange, compact = false }: Props) {
   const [activeTooltip, setActiveTooltip] = useState<string | null>(null);
 
-  // 그룹별 렌더링 함수
-  const renderFilters = (keys: FilterKey[]) => (
-    <div className="flex flex-wrap gap-4">
-      {keys.map((field) => {
-        const options = OPTIONS[field];
-        const selectedToken = ruleToToken(filters[field]);
-        const hasTooltip = !!FILTER_TOOLTIPS[field];
+  // 단일 필드 렌더링 (두 모드 공용)
+  const renderItem = (field: FilterKey) => {
+    const options = OPTIONS[field];
+    if (!options) return null;
+    const selectedToken = ruleToToken(filters[field]);
+    const isActive = selectedToken !== "ALL";
+    const hasTooltip = !!FILTER_TOOLTIPS[field];
 
-        return (
-          <div key={field} className="flex flex-col w-40 relative">
-            <div className="flex items-center mb-1 gap-1">
-              <label className="font-semibold text-xs text-gray-400 truncate cursor-default">
-                {FIELD_NAMES[field] ?? field}
-              </label>
-              {/* 물음표 아이콘 (툴팁이 있는 경우만) */}
-              {hasTooltip && (
-                <button
-                  type="button"
-                  className="text-[10px] w-4 h-4 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-400 transition-colors"
-                  onClick={() =>
-                    setActiveTooltip(activeTooltip === field ? null : field)
-                  }
-                >
-                  ?
-                </button>
-              )}
-            </div>
+    if (compact) {
+      return (
+        <div key={field} className="flex flex-col">
+          <label className="text-[10px] text-gray-500 mb-0.5 whitespace-nowrap">
+            {COMPACT_LABELS[field] ?? field}
+          </label>
+          <select
+            value={selectedToken}
+            onChange={(e) => onChange(field, tokenToRule(e.target.value))}
+            className={`bg-[#1a1a1a] border rounded px-2 py-0.5 text-xs cursor-pointer transition-colors focus:outline-none min-w-[100px] ${
+              isActive
+                ? "border-blue-500 text-blue-300"
+                : "border-[#2a2a2a] text-gray-300 hover:border-[#444]"
+            }`}
+          >
+            {options.map((opt) => (
+              <option key={opt} value={opt}>
+                {LABELS[opt] ?? opt}
+              </option>
+            ))}
+          </select>
+        </div>
+      );
+    }
 
-            {/* 툴팁 팝업 Layer (absolute) */}
-            {activeTooltip === field && (
-              <>
-                {/* 외부 클릭 시 닫기 위한 투명 오버레이 */}
-                <div
-                  className="fixed inset-0 z-10"
-                  onClick={() => setActiveTooltip(null)}
-                />
-                <div className="absolute z-20 top-full left-0 mt-2 w-64 p-3 bg-gray-900 border border-gray-600 text-xs text-gray-200 rounded shadow-xl whitespace-pre-wrap leading-relaxed">
-                  {FILTER_TOOLTIPS[field]}
-                  <div className="absolute bottom-full left-4 -mb-[1px] border-8 border-transparent border-b-gray-600" />
-                </div>
-              </>
-            )}
-
-            <select
-              value={selectedToken}
-              onChange={(e) => onChange(field, tokenToRule(e.target.value))}
-              className="bg-[#1E1E2E] text-gray-200 border border-gray-600 rounded-md px-3 py-1.5 text-sm w-full hover:border-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
+    // Panel 모드 (기존 스타일 유지)
+    return (
+      <div key={field} className="flex flex-col w-40 relative">
+        <div className="flex items-center mb-1 gap-1">
+          <label className="font-semibold text-xs text-gray-400 truncate cursor-default">
+            {FIELD_NAMES[field] ?? field}
+          </label>
+          {hasTooltip && (
+            <button
+              type="button"
+              className="text-[10px] w-4 h-4 rounded-full border border-gray-600 flex items-center justify-center text-gray-400 hover:text-blue-400 hover:border-blue-400 transition-colors"
+              onClick={() => setActiveTooltip(activeTooltip === field ? null : field)}
             >
-              {options.map((opt) => (
-                <option key={opt} value={opt}>
-                  {LABELS[opt] ?? opt}
-                </option>
-              ))}
-            </select>
-          </div>
-        );
-      })}
+              ?
+            </button>
+          )}
+        </div>
+        {activeTooltip === field && (
+          <>
+            <div className="fixed inset-0 z-10" onClick={() => setActiveTooltip(null)} />
+            <div className="absolute z-20 top-full left-0 mt-2 w-64 p-3 bg-gray-900 border border-gray-600 text-xs text-gray-200 rounded shadow-xl whitespace-pre-wrap leading-relaxed">
+              {FILTER_TOOLTIPS[field]}
+              <div className="absolute bottom-full left-4 -mb-[1px] border-8 border-transparent border-b-gray-600" />
+            </div>
+          </>
+        )}
+        <select
+          value={selectedToken}
+          onChange={(e) => onChange(field, tokenToRule(e.target.value))}
+          className="bg-[#1E1E2E] text-gray-200 border border-gray-600 rounded-md px-3 py-1.5 text-sm w-full hover:border-blue-500 focus:border-blue-500 transition-colors cursor-pointer"
+        >
+          {options.map((opt) => (
+            <option key={opt} value={opt}>
+              {LABELS[opt] ?? opt}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  };
+
+  // ----- Compact 모드 (Finviz 인라인 필터 그리드) -----
+  if (compact) {
+    return (
+      <div className="px-3 py-2 flex flex-wrap gap-x-4 gap-y-2">
+        {COMPACT_FILTER_KEYS.map((field) => renderItem(field))}
+      </div>
+    );
+  }
+
+  // ----- Panel 모드 (기존 그룹별 렌더링) -----
+  const renderGroup = (keys: FilterKey[]) => (
+    <div className="flex flex-wrap gap-4">
+      {keys.map((field) => renderItem(field))}
     </div>
   );
 
   return (
     <div className="mb-6 p-4 bg-[#181825] rounded-lg border border-gray-700 shadow-sm flex flex-col gap-6">
-      {/* 1. 기본 필터 섹션 */}
       <div className="border-b border-gray-700 pb-4">
         <h4 className="text-sm font-bold text-white mb-3 flex items-center gap-2">
           <span className="w-1 h-4 bg-blue-500 rounded-sm"></span>
           기본 필터 (Essential)
         </h4>
-        {renderFilters([
-          "marketCap",
-          "PER",
-          "PBR",
-          "dividendYield",
-          "roe",
-          "operatingMargin",
-          "profitMargin",
-          "sector",
-        ])}
+        {renderGroup(["marketCap", "PER", "PBR", "dividendYield", "roe", "operatingMargin", "profitMargin", "sector"])}
       </div>
-
-      {/* 2. 고급 필터 섹션 */}
       <div>
         <h4 className="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
           <span className="w-1 h-4 bg-gray-500 rounded-sm"></span>
           성장성 & 가치 (Advanced)
         </h4>
-        {renderFilters([
-          "PEG",
-          "revenueGrowth",
-          "epsGrowth",
-          "earningsYield",
-          "returnOnCapital",
-          "evEbitda",
-        ])}
+        {renderGroup(["PEG", "revenueGrowth", "epsGrowth", "earningsYield", "returnOnCapital", "evEbitda"])}
       </div>
     </div>
   );

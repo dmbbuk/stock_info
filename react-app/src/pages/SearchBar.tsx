@@ -7,14 +7,12 @@ type Props = {
 
 export default function SearchBar({ searchQuery, onChange }: Props) {
   return (
-    <div className="">
-      <input
-        type="text"
-        value={searchQuery}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="티커 검색 (예: AAPL, TSLA)"
-        className="w-full px-3 py-2 bg-[#2A2A40] text-white border border-[#444] rounded-md shadow-sm focus:outline-none focus:ring focus:ring-blue-500"
-      />
-    </div>
+    <input
+      type="text"
+      value={searchQuery}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder="Ticker search... (AAPL, TSLA)"
+      className="w-full h-7 px-2.5 text-xs bg-[#222] text-white border border-[#3a3a3a] rounded focus:outline-none focus:border-blue-500 placeholder-gray-600"
+    />
   );
 }
