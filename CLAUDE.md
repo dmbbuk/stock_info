@@ -190,7 +190,9 @@ GET /api/stocks/recommendations              # 추천
 | WebSocket | 코드 잔존하나 비활성 (현재 방향 아님) |
 | 테스트 환경 | 미구축 — test/ 폴더에 점진적 구축 예정 |
 | Mock 데이터 | 구비됨 (10,000개 종목 JSON) |
-| Python 수집 스크립트 | scripts/fetch_tickers.py 존재 |
+| Python 수집 스크립트 | fetch_all.py 작성 완료 (2026-04-13) — API 플랜 제한으로 실데이터 미수집 |
+| AWS S3 | 버킷 생성 완료 (stock-info-data), 업로드 테스트 성공 |
+| 루트 .gitignore | 생성 완료 (scripts/.env, output/ 제외) |
 
 ---
 
@@ -214,11 +216,11 @@ react-app/src/
 
 ## 현재 우선순위 (TODO.md 기준)
 
-1. 데이터 수집 배치 파이프라인 구축 (장 종료 후 EODHD → S3 저장)
-2. Gzip 압축 전송 (10MB → ~2MB)
-3. 비동기 fetch + 로딩 스켈레톤 UI (기골격 있음)
-4. 유명 투자자 필터 팩트체크 + Tooltip 고도화
-5. 테이블 우측 요약 컬럼
+1. **[블로커] 데이터 API 결정: EODHD 유료 vs FMP** — 현재 EODHD 무료 키로는 펀더멘탈/종가 403/423 에러
+2. API 결정 후 fetch_all.py 수정 + 실데이터 수집 테스트
+3. GitHub Actions cron 스케줄러 설정
+4. 프론트 fetch URL → S3로 교체 (fundamentalsFetcher.tsx)
+5. Next.js 백엔드(next-app/) 삭제
 
 ---
 
@@ -256,7 +258,7 @@ react-app/src/
   - 장 종료 후 1회 Python 스크립트 실행 → EODHD API 호출 → JSON.gz S3 업로드
   - React SPA가 S3 URL에서 직접 fetch → 클라이언트 필터링 (현재 구조 그대로)
   - 이 구조면 Next.js 백엔드(next-app/) 불필요 — 삭제 여부 미결정
-- **[미결] 데이터 API: EODHD(현재) vs FMP(Financial Modeling Prep)** — 비교 후 결정 필요
+- **[블로커] 데이터 API: EODHD(현재) vs FMP(Financial Modeling Prep)** — EODHD 무료 키로 fundamentals 403, bulk EOD 423 확인됨. 유료 전환($19.99/월~) 또는 FMP 전환 필요
 - **[미결] 배치 스케줄러: GitHub Actions cron vs AWS Lambda+EventBridge** — 미결정
 - 스크리너는 리얼타임 데이터 불필요 (Finviz Free도 15분 지연, 펀더멘털은 분기 단위)
 - UI 디자인: Finviz 스타일로 완료 — DaisyUI/NextUI 전환 검토 보류
@@ -294,3 +296,38 @@ react-app/src/
 - 데이터 API 최종 선택: EODHD vs FMP
 - 배치 스케줄러: GitHub Actions cron vs AWS Lambda+EventBridge
 - Next.js 백엔드(`next-app/`) 삭제 여부
+
+---
+
+### 2026-04-13
+
+**작업 내용:**
+- AWS 가입 (Free 플랜) + 보안 설정 가이드 (MFA, Budget Alert $1, IAM 분리)
+- S3 버킷 생성 완료 (`stock-info-data`, us-east-1)
+  - 퍼블릭 읽기 허용 (Bucket Policy)
+  - CORS 설정 (localhost:5173 허용)
+  - IAM 유저 `stock-info-uploader` (S3 PutObject만 허용)
+- `scripts/fetch_all.py` 신규 작성 — EODHD 기반 3종 데이터 수집 스크립트
+  - 티커 목록 / 펀더멘탈 / 종가 수집 → gzip → S3 업로드
+  - `--local`, `--limit N`, `--tickers-only` 플래그 지원
+  - `fundamentals.ts`의 변환 로직을 Python으로 복제 (FundamentalData 호환)
+- `scripts/requirements.txt` 생성 (requests, boto3, python-dotenv)
+- `scripts/.env.example` + `scripts/.env` 생성
+- 루트 `.gitignore` 생성 (scripts/.env, output/ 제외)
+- 로컬 테스트 실행:
+  - 티커 목록: 성공 (18,915개 Common Stock, 2.5MB → 0.3MB gzip)
+  - 펀더멘탈: **403 Forbidden** (EODHD 무료 플랜 제한)
+  - 종가 Bulk: **423 Locked** (EODHD 무료 플랜 제한)
+- S3 업로드 테스트: **성공** (test.json.gz 업로드 + 퍼블릭 URL 접근 확인)
+
+**결정사항:**
+- AWS Free 플랜으로 진행
+- S3 버킷명: `stock-info-data`
+- S3 파일 구조: `data/latest/*.json.gz` (프론트용) + `data/{날짜}/*.json.gz` (아카이브)
+
+**미결사항 (다음 세션 블로커):**
+- **데이터 API 최종 결정** — EODHD 유료($19.99/월~) vs FMP($14/월~) vs 기타
+  - EODHD 무료로는 펀더멘탈/종가 접근 불가 확인됨
+  - 이 결정 없이는 파이프라인 완성 불가
+- API 결정 후 fetch_all.py 엔드포인트/파싱 수정
+- AWS Secret Key가 채팅 로그에 노출됨 — IAM 키 로테이션 권장

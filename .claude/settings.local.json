@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:finviz.com)"
+      "WebFetch(domain:finviz.com)",
+      "Bash(pip install:*)",
+      "Bash(where python:*)",
+      "Bash(where python3:*)",
+      "Bash(where pip:*)",
+      "Bash(where pip3:*)",
+      "Bash(py --list)",
+      "Bash(py -3.14 -m pip install -r C:/Users/jinju/Documents/00.project/stock_info/scripts/requirements.txt)",
+      "Bash(py -3.14 scripts/fetch_all.py --local --limit 3)"
     ]
   }
 }
